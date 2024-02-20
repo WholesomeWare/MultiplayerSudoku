@@ -66,3 +66,6 @@ Ezek kellenek, hogy a projektet futtatni tudd.
   - [[Videó] The perfect imperfection of Google's Material You](https://youtu.be/k7pks7yqQOc?si=vui2N3OHUH8apymD)
 - [[Játék] Sudoku - The Clean One](https://play.google.com/store/apps/details?id=ee.dustland.android.dustlandsudoku)
 - [[Videók] #BestPhonesForever](https://youtube.com/playlist?list=PLnKtcw5mIGUR-aMBz9AphxHzEH7Kt-azY&si=qRH-o3z5-3HMfC9n)
+- [[Eszköz] Kotlin Playground](https://play.kotlinlang.org/)
+- [[Eszköz] Google's Material Design icon library](https://fonts.google.com/icons)
+- [[Eszköz] Pictogrammers (extended Material Design icon library)](https://pictogrammers.com/library/mdi/)
