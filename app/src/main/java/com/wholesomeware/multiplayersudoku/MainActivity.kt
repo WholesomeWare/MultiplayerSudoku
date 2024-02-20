@@ -16,13 +16,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MultiplayerSudokuTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Text(text = "Szija Viki!")
-                }
+            MainScreen()
+        }
+    }
+
+    @Preview
+    @Composable
+    private fun MainScreen() {
+        MultiplayerSudokuTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Text(text = "Szija Viki!")
             }
         }
     }

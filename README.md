@@ -1,5 +1,7 @@
 # Multiplayer Sudoku
 
+[Feladatok](./TODO.md)
+
 Határidő: Március 20.
 
 | Követelmény           | Appunk                          |
