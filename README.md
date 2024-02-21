@@ -1,6 +1,8 @@
 # Multiplayer Sudoku
 
-[Feladatok](./TODO.md)
+- [Feladatok](./TODO.md)
+- [Drive mappa az titkos fájloknak](https://drive.google.com/drive/folders/1SeNaHV2GGublvJj6MYGFj9JWlsjYWdy-?usp=sharing)
+- [Projekt beállítása és futtatása](./SETUP.md)
 
 Határidő: Március 20.
 
@@ -74,28 +76,3 @@ nem bonyolult. Ezt beadás után egyedül is meg tudnám csinálni ha nem szeret
 1-2? 1-4? Csak 2? Lehessen egyáltalán egyedül? Vagy legyen felső határ? Talán az a legegyszerűbb,
 ha egyedül is lehet és nincs felső határ. Talán azt a legkönnyebb lekódolni.
 Arra gondoltam, hogy ilyen party rendszer lehetne, meghívó kódokkal.
-
-## Környezet
-
-Ezek kellenek, hogy a projektet futtatni tudd.
-
-- Android Studio Iguana 2023.2.1 RC2 vagy újabb
-- `google-services.json` fájl a Firebase projektből az `app` mappába (majd rakok ide linket hozzá,
-  mert tilos GitHub-ra feltölteni)
-
-## Bónusz tartalmak csak úgy szórakozásnak
-
-- [Material 3](https://m3.material.io/)
-  - [[Eszköz] Theme Builder](https://m3.material.io/theme-builder#/custom)
-  - [[Videó] The perfect imperfection of Google's Material You](https://youtu.be/k7pks7yqQOc?si=vui2N3OHUH8apymD)
-- [[Játék] Sudoku - The Clean One](https://play.google.com/store/apps/details?id=ee.dustland.android.dustlandsudoku)
-- [[Videók] #BestPhonesForever](https://youtube.com/playlist?list=PLnKtcw5mIGUR-aMBz9AphxHzEH7Kt-azY&si=qRH-o3z5-3HMfC9n)
-- [[Eszköz] Kotlin Playground](https://play.kotlinlang.org/)
-- [[Eszköz] Google's Material Design icon library](https://fonts.google.com/icons)
-- [[Eszköz] Pictogrammers (extended Material Design icon library)](https://pictogrammers.com/library/mdi/)
-
-## Sudoku kutatás
-
-- [Medium: Let’s make the Sudoku generator library in Kotlin](https://medium.com/@typical.dev/lets-make-the-sudoku-generator-library-in-kotlin-8e0dd45c72b6)
-- [Android Sudoku Tutorial in Kotlin](https://youtube.com/playlist?list=PLJSII25WrAz72NhnBitybKMMX0_f1UEym&si=Pcc-ViwZYxzFOU8S)
-  - [GitHub repo](https://github.com/patrickfeltes/sudoku-android-kotlin)
