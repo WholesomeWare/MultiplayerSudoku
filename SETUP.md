@@ -2,7 +2,7 @@
 
 ## Szoftverek és fájlok build-eléshez
 
-- Android Studio Iguana 2023.2.1 RC2 vagy újabb: Legegyszerűbb az Android Studio-t beszerezni és frissen tartani a [Jetbrains Toolbox-al](https://www.jetbrains.com/toolbox-app/) lehet
+- Android Studio Iguana 2023.2.1 RC2 vagy újabb (Szerintem megy Hedgehog-on is): Legegyszerűbb az Android Studio-t beszerezni és frissen tartani a [Jetbrains Toolbox-al](https://www.jetbrains.com/toolbox-app/) lehet
 - [`google-services.json`](https://drive.google.com/drive/folders/1SeNaHV2GGublvJj6MYGFj9JWlsjYWdy-?usp=sharing) fájl a Firebase projektből az `app` mappába
 
 Ha ezek megvannak, a projekt elvileg gond nélkül lefut debug módban.

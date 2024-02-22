@@ -55,6 +55,8 @@ https://github.com/CsakiTheOne/MultiplayerSudoku
   - **res**: képek, ikonok, szövegek, stb.
 - **Gradle Scripts**: ez build-eli az appot és kezeli a külső kódokat
 
+## Technológiák videókkal
+
 | Technológiák      | Amit mi használunk                                                                                          | Amit a tanár tanítana                                          |
 | ----------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | Nyelv             | [Kotlin](https://youtu.be/xT8oP0wy-A0?si=zEUFU8Q9PKs410wv)                                                  | [Java](https://youtu.be/m4-HM_sCvtQ?si=AGjvO837VE8ae9Bc)       |
@@ -76,3 +78,7 @@ nem bonyolult. Ezt beadás után egyedül is meg tudnám csinálni ha nem szeret
 1-2? 1-4? Csak 2? Lehessen egyáltalán egyedül? Vagy legyen felső határ? Talán az a legegyszerűbb,
 ha egyedül is lehet és nincs felső határ. Talán azt a legkönnyebb lekódolni.
 Arra gondoltam, hogy ilyen party rendszer lehetne, meghívó kódokkal.
+
+### Márkám mehet az appba? :D
+
+Ha már [ide](https://play.google.com/store/apps/dev?id=8177011913013516936) lesz feltöltve, akkor szeretném, ha ugyanúgy benne lenne a WholesomeWare az alkalmazásban, mint a többiben. (Splash screen-en logó és név, plusz egy gomb a fejlesztői oldalra.) Viszont az egyértelmű, hogy a te nevednek is lesz helye.
