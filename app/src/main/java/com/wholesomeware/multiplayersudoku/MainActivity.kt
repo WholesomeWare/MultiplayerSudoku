@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity() {
                         Text(text = "Új feladvány")
                     }
                     
+                    Text(text = "Made by Viki & Csáki")
                 }
             }
         }
