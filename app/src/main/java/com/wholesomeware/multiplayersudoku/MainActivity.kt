@@ -61,18 +61,7 @@ class MainActivity : ComponentActivity() {
                     SudokuDisplay(
                         sudoku = sudoku,
                     )
-                    Button(
-                        onClick = {
-                            isReady = false
-                            coroutineScope.launch(Dispatchers.Default) {
-                                sudoku = SudokuGenerator.create(Sudoku.Difficulty.EASY)
-                                isReady = true
-                            }
-                        },
-                        enabled = isReady,
-                    ) {
-                        Text(text = "Új feladvány")
-                    }
+                    
                 }
             }
         }
