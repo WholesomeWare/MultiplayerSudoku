@@ -1,5 +1,8 @@
 package com.wholesomeware.multiplayersudoku.sudoku
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import kotlin.random.Random
 
 class SudokuGenerator {
@@ -14,7 +17,10 @@ class SudokuGenerator {
 
         private lateinit var grid: Array<IntArray>
 
-        fun create(difficulty: Sudoku.Difficulty): Sudoku {
+        var isGenerating by mutableStateOf(false)
+            private set
+
+        suspend fun create(difficulty: Sudoku.Difficulty): Sudoku {
             grid = Array(GRID_SIZE) { IntArray(GRID_SIZE) }
             fillGrid(difficulty)
             return Sudoku(grid)

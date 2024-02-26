@@ -12,9 +12,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,8 @@ import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
 import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +40,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
-            var sudoku by remember {
-                mutableStateOf(SudokuGenerator.create(Sudoku.Difficulty.EASY))
+            val coroutineScope = rememberCoroutineScope()
+            var sudoku by remember { mutableStateOf(Sudoku.EMPTY) }
+            var isReady by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                sudoku = SudokuGenerator.create(Sudoku.Difficulty.EASY)
+                isReady = true
             }
 
             Surface(
@@ -52,9 +61,18 @@ class MainActivity : ComponentActivity() {
                     SudokuDisplay(
                         sudoku = sudoku,
                     )
-                }
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Új feladvány")
+                    Button(
+                        onClick = {
+                            isReady = false
+                            coroutineScope.launch(Dispatchers.Default) {
+                                sudoku = SudokuGenerator.create(Sudoku.Difficulty.EASY)
+                                isReady = true
+                            }
+                        },
+                        enabled = isReady,
+                    ) {
+                        Text(text = "Új feladvány")
+                    }
                 }
             }
         }

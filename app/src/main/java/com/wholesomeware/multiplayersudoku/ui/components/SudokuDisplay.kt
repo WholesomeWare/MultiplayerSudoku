@@ -43,7 +43,7 @@ fun SudokuCell(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
-        AnimatedVisibility(visible = value != 0) {
+        if (value != 0) {
             Text(text = value.toString())
         }
     }
