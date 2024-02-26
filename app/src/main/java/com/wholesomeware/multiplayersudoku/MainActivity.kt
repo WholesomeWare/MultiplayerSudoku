@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 Button(onClick = { /*TODO*/ }) {
-                    
+                    Text(text = "Új feladvány")
                 }
             }
         }
