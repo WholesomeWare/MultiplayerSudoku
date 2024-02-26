@@ -73,6 +73,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Text(text = "Új feladvány")
                     }
+                    
                 }
             }
         }
