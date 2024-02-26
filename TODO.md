@@ -31,10 +31,7 @@ Bónusz tartalmak csak úgy szórakozásnak:
 
 Ideírom, csak hogy lásd, hogy nem lustulok. xd
 
-- [ ] Sudoku generáló kód összepakolása
-  - [Medium: Let’s make the Sudoku generator library in Kotlin](https://medium.com/@typical.dev/lets-make-the-sudoku-generator-library-in-kotlin-8e0dd45c72b6)
-  - [Android Sudoku Tutorial in Kotlin](https://youtube.com/playlist?list=PLJSII25WrAz72NhnBitybKMMX0_f1UEym&si=Pcc-ViwZYxzFOU8S)
-    - [GitHub repo](https://github.com/patrickfeltes/sudoku-android-kotlin)
+- [x] Sudoku generáló kód összepakolása
 - [x] Firebase projekt létrehozása és összekapcsolás az appal
 
 ## Fő feladatok
