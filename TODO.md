@@ -43,10 +43,28 @@ Ideírom, csak hogy lásd, hogy nem lustulok. xd
 
 ### Viki
 
+Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
+
+- [ ] Frontend
+  - [ ] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
+  - [ ] Bejelentkező felület: `LoginActivity.kt`
+  - [ ] Menü felülete: `MenuActivity.kt`
+  - [ ] Sudoku feladvány kinézete: `ui/components/SudokuDisplay.kt`
+- [ ] API
+  - [ ] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
+  - [ ] Regisztrálás és bejelentkezés email-jelszó kombóval: `firebase/Auth.kt` függvényeit használva a `LoginActivity.kt`-ben
+  - [ ] Kijelentkezés lehetőség a menüben: `firebase/Auth.kt`-ből a `signOut()` függvényt használva a `MainActivity.kt`-ben
+  - Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
+
 ### Csáki
 
 - [ ] Adatszerkezetek kialakítása
 - [ ] Adatbázis létrehozása
+  - [x] Firestore adatbázis létrehozása Firebase projektben
+  - [ ] Biztonsági szabályok megírása
 - [ ] API kódok írása
   - [ ] Auth
+    - [x] Email-jelszó kombós regisztrálás, bejelentkezés, kijelentkezés kódja
+    - [ ] Google bejelentkezés kódja
   - [ ] Firestore
+    - [ ] Lobby kezelés
