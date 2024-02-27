@@ -16,7 +16,7 @@ Semmi sem kötelező
   - Segítségért zaklass vagy ha épp nem vagyok elérhető, ezt ajánlom: [Jetpack Compose tutorial lejátszási lista](https://youtube.com/playlist?list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&si=B8b-Gfaqi5kq7B4x) (kicsit régi, de a legtöbb dolog még mindig ugyanúgy működik)
 - [ ] [Jetpack Compose kurzus Google-től](https://developer.android.com/courses/android-basics-compose/unit-1), de úgyis megdumálunk mindent meg szívesen megtanítok mindent én is
 - [ ] Kísérletezz nyugodtan a projekben
-  - Ezekben nyugodtan írogálhatsz: MainActivity.kt, ui/theme mappában lévő fájlok
+  - Ezekben nyugodtan írogálhatsz: MainActivity.kt, ui/theme mappában lévő fájlok, ui/components mappában lévő fájlok
   - Ha valamit véletlen errontottál vagy vissza akarsz állítani mindent, GitHub Desktop-ban a változtatásaid el tudod vetni "Discard changes"
 
 Bónusz tartalmak csak úgy szórakozásnak:

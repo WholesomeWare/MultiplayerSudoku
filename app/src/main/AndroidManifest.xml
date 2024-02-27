@@ -12,6 +12,21 @@
         android:theme="@style/Theme.MultiplayerSudoku"
         tools:targetApi="31">
         <activity
+            android:name=".LobbyActivity"
+            android:exported="false"
+            android:label="@string/title_activity_lobby"
+            android:theme="@style/Theme.MultiplayerSudoku" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.MultiplayerSudoku" />
+        <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:label="@string/title_activity_game"
+            android:theme="@style/Theme.MultiplayerSudoku" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MultiplayerSudoku">
