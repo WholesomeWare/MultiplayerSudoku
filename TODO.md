@@ -48,7 +48,7 @@ Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok
 - [ ] Frontend
   - [ ] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
   - [ ] Bejelentkező felület: `LoginActivity.kt`
-  - [ ] Menü felülete: `MenuActivity.kt`
+  - [ ] Menü felülete: `MainActivity.kt`
   - [ ] Sudoku feladvány kinézete: `ui/components/SudokuDisplay.kt`
 - [ ] API
   - [ ] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
