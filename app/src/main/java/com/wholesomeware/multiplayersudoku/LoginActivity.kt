@@ -40,48 +40,62 @@ class LoginActivity : ComponentActivity() {
             var email by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
 
-            //TODO: Bejelentkezési felület. Csak hogy meglegyen a kellő komplexitás,
-            // legyen email-jelszó kombós és Google bejelentkezés.
-            // Ezekhez összerakom a backend-et, próbálj csinálni valami UI-t neki.
+            //TODO: UI kinda kész, még egy regisztrálás gomb kellene csak mindenképp.
+            // (meg ki lehet egészíteni itt is játék névvel meg ikonokkal, stb.)
+            // Ha van kedv, még szépítgetheted, de az email-jelszó bejelentkezést
+            // már össze lehet kötni a backend-el.
+            // Használd a gombok onClick-jében az Auth.registerWithEmailAndPassword() és
+            // Auth.signInWithEmailAndPassword() függvényeket.
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         value = email,
                         onValueChange = { email = it },
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(bottom = 16.dp),
                         label = { Text("Email") }
                     )
 
                     OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         value = password,
                         onValueChange = { password = it },
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(bottom = 16.dp),
                         label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
                     )
 
                     Button(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        onClick = {
+                            /*TODO Auth függvény meghívása*/
+                        },
                     ) {
                         Text("Bejelentkezés")
                     }
 
 
                     Button(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        onClick = {
+                            /*TODO Auth függvény meghívása*/
+                        },
                     ) {
                         Text("Google bejelentkezés")
                     }

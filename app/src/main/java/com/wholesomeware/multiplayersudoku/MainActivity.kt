@@ -1,5 +1,6 @@
 package com.wholesomeware.multiplayersudoku
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,101 +42,114 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainScreen()
         }
+
+        openLoginIfNeeded()
+    }
+
+    private fun openLoginIfNeeded() {
+        if (!Auth.isSignedIn) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 
     @Preview
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
-            //TODO: A MainActivity menüként fog szolgálni a már bejelentkezett felhasználóknak.
-            // Próbálj meg egy egyszerű menüt öszerakni. Ezek tuti kellenek:
-            // - Gomb, amivel játékot lehet indítani (host-olni)
-            // - Szövegdoboz, amibe be lehet írni egy játék (lobby) kódját
-            // - Gomb, amivel játékhoz lehet csatlakozni
-            // Ezeknek még nem kell működniük, csak próbálgasd a UI-t.
-            // Gomb doksija: https://developer.android.com/jetpack/compose/components/button
-            // Szövegdoboz doksija: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#textfield
+            //TODO: Szépítgetés, kijelentkezés lehetőség
 
             // Ez a surface az alkalmazás háttere. Ennek a belsejébe rakd az elemeket.
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                // Menü elemei ide. Pl. kezdhetsz egy oszloppal (Column) és abba mehetnek a dolgok.
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                        .padding(top = 50.dp)) {
-                    Text(text = "Sudoku",
-                        fontSize = 30.sp)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 50.dp)
+                ) {
+                    Text(
+                        text = "Sudoku",
+                        fontSize = 30.sp
+                    )
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize()) {
-                        Row {
-                            OutlinedCard(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface,
-                                ),
-                                border = BorderStroke(1.dp, Color.Black),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Row {
+                        OutlinedCard(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ),
+                            border = BorderStroke(1.dp, Color.Black),
+                            modifier = Modifier
+                                .size(width = 180.dp, height = 200.dp)
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
-                                    .size(width = 180.dp, height = 200.dp)
+                                    .fillMaxSize()
+                                    .padding(top = 10.dp)
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.fillMaxSize()
-                                        .padding(top = 10.dp)
-                                ) {
-                                    Text(text = "Új szoba")
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    OutlinedButton(
-                                        onClick = { /*TODO*/ }) {
-                                        Text("Létrehozás")
-                                    }
+                                Text(text = "Új szoba")
+                                Spacer(modifier = Modifier.weight(1f))
+                                OutlinedButton(
+                                    onClick = { /*TODO*/ }) {
+                                    Text("Létrehozás")
                                 }
                             }
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            OutlinedCard(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface,
-                                ),
-                                border = BorderStroke(1.dp, Color.Black),
-                                modifier = Modifier
-                                    .size(width = 180.dp, height = 200.dp)
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.fillMaxSize()
-                                        .padding(top = 10.dp)
-                                ) {
-                                    Text(text = "Csatlakozás szobához")
-                                    var text by rememberSaveable { mutableStateOf("") }
-
-                                    OutlinedTextField(
-                                        value = text,
-                                        onValueChange = { text = it },
-                                        placeholder = { Text("Kód",
-                                                    fontSize = 14.sp) },
-                                        modifier = Modifier
-                                            .width(150.dp)
-                                            .height(60.dp)
-                                            .padding(top = 10.dp),
-                                        textStyle = TextStyle(fontSize = 14.sp)
-
-                                    )
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    OutlinedButton(onClick = { /*TODO*/ }) {
-                                        Text("Csatlakozás")
-                                    }
-                                }
-                            }
-
                         }
-                    }
 
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        OutlinedCard(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                            ),
+                            border = BorderStroke(1.dp, Color.Black),
+                            modifier = Modifier
+                                .size(width = 180.dp, height = 200.dp)
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 10.dp)
+                            ) {
+                                Text(text = "Csatlakozás szobához")
+                                var text by rememberSaveable { mutableStateOf("") }
+
+                                OutlinedTextField(
+                                    value = text,
+                                    onValueChange = { text = it },
+                                    placeholder = {
+                                        Text(
+                                            "Kód",
+                                            fontSize = 14.sp
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .width(150.dp)
+                                        .height(60.dp)
+                                        .padding(top = 10.dp),
+                                    textStyle = TextStyle(fontSize = 14.sp)
+
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                OutlinedButton(onClick = { /*TODO*/ }) {
+                                    Text("Csatlakozás")
+                                }
+                            }
+                        }
+
+                    }
                 }
+
             }
         }
     }
+}
 
