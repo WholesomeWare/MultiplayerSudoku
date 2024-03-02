@@ -1,25 +1,6 @@
 # Feladatok
 
-## Előkészületek
-
-### Viki
-
-Semmi sem kötelező
-
-- [ ] Kísérletezz [itt](https://m3.material.io/theme-builder#/custom) téma készítéssel
-  - [ ] Ha alkotsz valamit, ami tetszik, akkor jobb felső sarokban `Export` -> `Jetpack Compose (Theme.kt)` és rakd a `non-project files` mappába
-  - [ ] `git commit` `git push`
-- [ ] Kis gyakorlás mielőtt nekiállunk a nagy dolgoknak
-  - [ ] A `MainActivity`-ben a létező szöveget rakd egy `Column` elembe
-  - [ ] Az oszlopba a szöveg alá rakj egy gombot (`Button`), ami kiír egy kis `Toast` üzenetet ha megnyomjuk (a gomb és üzenet szövege rád van bízva)
-  - [ ] `git commit` `git push`
-  - Segítségért zaklass vagy ha épp nem vagyok elérhető, ezt ajánlom: [Jetpack Compose tutorial lejátszási lista](https://youtube.com/playlist?list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&si=B8b-Gfaqi5kq7B4x) (kicsit régi, de a legtöbb dolog még mindig ugyanúgy működik)
-- [ ] [Jetpack Compose kurzus Google-től](https://developer.android.com/courses/android-basics-compose/unit-1), de úgyis megdumálunk mindent meg szívesen megtanítok mindent én is
-- [ ] Kísérletezz nyugodtan a projekben
-  - Ezekben nyugodtan írogálhatsz: MainActivity.kt, ui/theme mappában lévő fájlok, ui/components mappában lévő fájlok
-  - Ha valamit véletlen errontottál vagy vissza akarsz állítani mindent, GitHub Desktop-ban a változtatásaid el tudod vetni "Discard changes"
-
-Bónusz tartalmak csak úgy szórakozásnak:
+## Bónusz tartalmak csak úgy szórakozásnak
 
 - [Material 3](https://m3.material.io/)
   - [[Eszköz] Theme Builder](https://m3.material.io/theme-builder#/custom)
@@ -29,13 +10,8 @@ Bónusz tartalmak csak úgy szórakozásnak:
 - [[Eszköz] Kotlin Playground](https://play.kotlinlang.org/)
 - [[Eszköz] Google's Material Design icon library](https://fonts.google.com/icons)
 - [[Eszköz] Pictogrammers (extended Material Design icon library)](https://pictogrammers.com/library/mdi/)
-
-### Csáki
-
-Ideírom, csak hogy lásd, hogy nem lustulok. xd
-
-- [x] Sudoku generáló kód összepakolása
-- [x] Firebase projekt létrehozása és összekapcsolás az appal
+- [Jetpack Compose kurzus Google-től](https://developer.android.com/courses/android-basics-compose/unit-1), de úgyis megdumálunk mindent meg szívesen megtanítok mindent én is
+- Segítségért zaklass vagy ha épp nem vagyok elérhető, ezt ajánlom: [Jetpack Compose tutorial lejátszási lista](https://youtube.com/playlist?list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&si=B8b-Gfaqi5kq7B4x) (kicsit régi, de a legtöbb dolog még mindig ugyanúgy működik)
 
 ## Fő feladatok
 
@@ -46,8 +22,9 @@ Ideírom, csak hogy lásd, hogy nem lustulok. xd
 Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
 
 - [ ] Frontend
-  - [ ] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
-  - [ ] Bejelentkező felület: `LoginActivity.kt`
+  - [x] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
+  - [x] Bejelentkező felület: `LoginActivity.kt`
+    - [ ] Kiegészítés regisztrálás gombbal, esetleg az app nevével
   - [ ] Menü felülete: `MainActivity.kt`
   - [ ] Sudoku feladvány kinézete: `ui/components/SudokuDisplay.kt`
 - [ ] API
