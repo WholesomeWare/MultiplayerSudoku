@@ -11,12 +11,7 @@ class Auth {
         /**
          * Az aktuálisan bejelentkezett felhasználó. Ha nincs bejelentkezett felhasználó, akkor `null`.
          */
-        val currentUser = auth.currentUser
-
-        /**
-         * Igaz, ha van bejelentkezett felhasználó, egyébként hamis.
-         */
-        val isSignedIn= currentUser != null
+        fun getCurrentUser() = auth.currentUser
 
         /**
          * Regisztrál egy új felhasználót email cím és jelszó alapján.
@@ -29,6 +24,10 @@ class Auth {
             password: String,
             onResult: (Boolean) -> Unit,
         ) {
+            if (email.isBlank() || password.isBlank()) {
+                onResult(false)
+                return
+            }
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener {
                     onResult(it.isSuccessful)
@@ -46,6 +45,10 @@ class Auth {
             password: String,
             onResult: (Boolean) -> Unit,
         ) {
+            if (email.isBlank() || password.isBlank()) {
+                onResult(false)
+                return
+            }
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener {
                     onResult(it.isSuccessful)

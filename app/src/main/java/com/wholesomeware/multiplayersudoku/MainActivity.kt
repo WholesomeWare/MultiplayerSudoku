@@ -2,6 +2,7 @@ package com.wholesomeware.multiplayersudoku
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -14,16 +15,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,44 +59,67 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openLoginIfNeeded() {
-        if (!Auth.isSignedIn) {
+        if (Auth.getCurrentUser() == null) {
             startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Preview
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
             //TODO: Szépítgetés, kijelentkezés lehetőség
 
+            var isMenuOpen by remember { mutableStateOf(false) }
+
             // Ez a surface az alkalmazás háttere. Ennek a belsejébe rakd az elemeket.
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 50.dp)
-                ) {
-                    Text(
-                        text = "Sudoku",
-                        fontSize = 30.sp
+                Column {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(text = "Sudoku")
+                        },
+                        navigationIcon = {
+                            //TODO: app icon
+                        },
+                        actions = {
+                            IconButton(onClick = { isMenuOpen = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Localized description"
+                                )
+                                DropdownMenu(
+                                    expanded = isMenuOpen,
+                                    onDismissRequest = { isMenuOpen = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text(text = "Kijelentkezés") },
+                                        onClick = {
+                                            Auth.signOut()
+                                            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                                            finish()
+                                        }
+                                    )
+                                }
+                            }
+                        },
                     )
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     Row {
-                        OutlinedCard(
+                        ElevatedCard(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
                             ),
-                            border = BorderStroke(1.dp, Color.Black),
                             modifier = Modifier
                                 .size(width = 180.dp, height = 200.dp)
                         ) {
@@ -105,11 +140,10 @@ class MainActivity : ComponentActivity() {
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        OutlinedCard(
+                        ElevatedCard(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
                             ),
-                            border = BorderStroke(1.dp, Color.Black),
                             modifier = Modifier
                                 .size(width = 180.dp, height = 200.dp)
                         ) {

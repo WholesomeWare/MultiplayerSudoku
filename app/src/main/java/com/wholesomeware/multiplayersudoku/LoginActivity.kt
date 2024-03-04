@@ -1,10 +1,12 @@
 package com.wholesomeware.multiplayersudoku
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class LoginActivity : ComponentActivity() {
@@ -39,6 +42,7 @@ class LoginActivity : ComponentActivity() {
         MultiplayerSudokuTheme {
             var email by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
+            var errorMessage by remember { mutableStateOf("") }
 
             //TODO: UI kinda kész, még egy regisztrálás gomb kellene csak mindenképp.
             // (meg ki lehet egészíteni itt is játék névvel meg ikonokkal, stb.)
@@ -64,7 +68,8 @@ class LoginActivity : ComponentActivity() {
                             .padding(8.dp),
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") }
+                        label = { Text("Email") },
+                        isError = errorMessage.isNotBlank(),
                     )
 
                     OutlinedTextField(
@@ -75,18 +80,49 @@ class LoginActivity : ComponentActivity() {
                         onValueChange = { password = it },
                         label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
+                        supportingText = {Text(errorMessage)},
+                        isError = errorMessage.isNotBlank(),
                     )
+                    Row(){
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            onClick = {
+                                Auth.registerWithEmailAndPassword(email, password) {
+                                    if(it){
+                                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                        finish()
+                                    }
+                                    else{
+                                        errorMessage = "Hiba!"
+                                    }
+                                }
+                            },
+                        ) {
+                            Text("Regisztráció")
+                        }
 
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onClick = {
-                            /*TODO Auth függvény meghívása*/
-                        },
-                    ) {
-                        Text("Bejelentkezés")
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            onClick = {
+                                Auth.signInWithEmailAndPassword(email, password) {
+                                    if(it){
+                                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                        finish()
+                                    }
+                                    else{
+                                        errorMessage = "Hiba!"
+                                    }
+                                }
+                            },
+                        ) {
+                            Text("Bejelentkezés")
+                        }
                     }
+
 
 
                     Button(
