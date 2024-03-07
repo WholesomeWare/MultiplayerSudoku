@@ -2,6 +2,7 @@ package com.wholesomeware.multiplayersudoku.firebase
 
 import com.wholesomeware.multiplayersudoku.App
 import com.wholesomeware.multiplayersudoku.model.Player
+import com.wholesomeware.multiplayersudoku.model.Room
 
 class Firestore {
     class Players {
@@ -50,6 +51,22 @@ class Firestore {
     }
     class Rooms {
         companion object {
+
+            /**
+             * Lekér egy szobát azonosító alapján.
+             * @param id A szoba azonosítója. Megegyezik a meghívó kódjával.
+             */
+            fun getRoomById(id: String, onResult: (Room?) -> Unit) {
+                App.instance.firestore.collection("rooms").document(id).get()
+                    .addOnSuccessListener {
+                        val room = it.toObject(Room::class.java)
+                            ?.copy(id = it.id)
+                        onResult(room)
+                    }
+                    .addOnFailureListener {
+                        onResult(null)
+                    }
+            }
 
         }
     }
