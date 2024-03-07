@@ -1,14 +1,27 @@
 package com.wholesomeware.multiplayersudoku.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 
 /**
@@ -19,19 +32,39 @@ import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 fun SudokuDisplay(
     modifier: Modifier = Modifier,
     sudoku: Sudoku,
+    onCellClick: (Int, Int) -> Unit,
+    cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier,
+    ) {
         //TODO: Cellák közti vastagabb vonalakat valahogy itt kellene megoldani.
         // A Box elemben minden egymásban van, szóval itt meg lehet oldani, hogy a vonalak a cellák mögött legyenek.
+        Column(
+            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            Box(modifier = Modifier.height(2.dp).fillMaxWidth().background(cellBorderColor))
+            Box(modifier = Modifier.height(2.dp).fillMaxWidth().background(cellBorderColor))
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            Box(modifier = Modifier.width(2.dp).fillMaxHeight().background(cellBorderColor))
+            Box(modifier = Modifier.width(2.dp).fillMaxHeight().background(cellBorderColor))
+        }
         Column {
-            sudoku.grid.forEach { row ->
+            sudoku.grid.forEachIndexed { rowIndex, row ->
                 Row {
-                    row.forEach {
+                    row.forEachIndexed { columnIndex, column ->
                         SudokuCell(
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f),
-                            value = it,
+                            value = column,
+                            onClick = { onCellClick(rowIndex, columnIndex) },
+                            borderColor = cellBorderColor,
                         )
                     }
                 }
@@ -48,13 +81,17 @@ fun SudokuDisplay(
 fun SudokuCell(
     modifier: Modifier = Modifier,
     value: Int,
+    onClick: () -> Unit,
+    borderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     //TODO: Cellák közti vékony vonalakat itt kell megcsinálni.
     // Szerintem a legegyszerűbb az itteni Box elemre valami körvonalat rakni.
     // Bár ugyanezt meg lehet oldani a SudokuDisplay-ben is ahol meghívjuk ezt a függvényt.
     // Hát ahol jobbnak érezzük...
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .border(.01f.dp, borderColor)
+            .clickable { onClick() },
         contentAlignment = Alignment.Center,
     ) {
         if (value != 0) {
