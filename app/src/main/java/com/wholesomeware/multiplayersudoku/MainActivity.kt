@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +71,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
-            //TODO: Szépítgetés, kijelentkezés lehetőség
+            //TODO: Szépítgetés, becenév szerkesztés, fiók törlés
 
             var isMenuOpen by remember { mutableStateOf(false) }
             var inviteCode by rememberSaveable { mutableStateOf("") }
@@ -83,18 +87,24 @@ class MainActivity : ComponentActivity() {
                             Text(text = "Multiplayer Sudoku")
                         },
                         navigationIcon = {
-                            //TODO: app icon
+                            //TODO: app ikon ide
+                            Icon(
+                                modifier = Modifier.width(48.dp).aspectRatio(1f),
+                                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                                contentDescription = null,
+                            )
                         },
                         actions = {
                             IconButton(onClick = { isMenuOpen = true }) {
                                 Icon(
-                                    imageVector = Icons.Default.MoreVert,
+                                    imageVector = Icons.Default.AccountCircle,
                                     contentDescription = null,
                                 )
                                 DropdownMenu(
                                     expanded = isMenuOpen,
                                     onDismissRequest = { isMenuOpen = false }
                                 ) {
+                                    //TODO: becenév szerkesztés
                                     DropdownMenuItem(
                                         text = { Text(text = "Kijelentkezés") },
                                         onClick = {
@@ -108,6 +118,7 @@ class MainActivity : ComponentActivity() {
                                             finish()
                                         }
                                     )
+                                    //TODO: fiók törlés
                                 }
                             }
                         },
@@ -148,7 +159,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 Text(
                                     "Létrehozás",
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(start = 8.dp),
                                 )
                             }
 
@@ -185,7 +196,8 @@ class MainActivity : ComponentActivity() {
 
                             Button(
                                 onClick = { /*TODO*/ },
-                                modifier = Modifier.padding(8.dp)
+                                modifier = Modifier
+                                    .padding(8.dp)
                                     .align(Alignment.End),
                             ) {
                                 Icon(
@@ -194,7 +206,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 Text(
                                     "Csatlakozás",
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(start = 8.dp),
                                 )
                             }
                         }
