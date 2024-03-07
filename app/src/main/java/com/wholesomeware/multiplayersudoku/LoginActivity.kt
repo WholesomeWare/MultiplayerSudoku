@@ -44,12 +44,7 @@ class LoginActivity : ComponentActivity() {
             var password by remember { mutableStateOf("") }
             var errorMessage by remember { mutableStateOf("") }
 
-            //TODO: UI kinda kész, még egy regisztrálás gomb kellene csak mindenképp.
-            // (meg ki lehet egészíteni itt is játék névvel meg ikonokkal, stb.)
-            // Ha van kedv, még szépítgetheted, de az email-jelszó bejelentkezést
-            // már össze lehet kötni a backend-el.
-            // Használd a gombok onClick-jében az Auth.registerWithEmailAndPassword() és
-            // Auth.signInWithEmailAndPassword() függvényeket.
+            //TODO: szépítgetés
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

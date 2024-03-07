@@ -38,8 +38,6 @@ fun SudokuDisplay(
     Box(
         modifier = modifier,
     ) {
-        //TODO: Cellák közti vastagabb vonalakat valahogy itt kellene megoldani.
-        // A Box elemben minden egymásban van, szóval itt meg lehet oldani, hogy a vonalak a cellák mögött legyenek.
         Column(
             modifier = Modifier.fillMaxWidth().aspectRatio(1f),
             verticalArrangement = Arrangement.SpaceEvenly,
@@ -84,10 +82,6 @@ fun SudokuCell(
     onClick: () -> Unit,
     borderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    //TODO: Cellák közti vékony vonalakat itt kell megcsinálni.
-    // Szerintem a legegyszerűbb az itteni Box elemre valami körvonalat rakni.
-    // Bár ugyanezt meg lehet oldani a SudokuDisplay-ben is ahol meghívjuk ezt a függvényt.
-    // Hát ahol jobbnak érezzük...
     Box(
         modifier = modifier
             .border(.01f.dp, borderColor)
