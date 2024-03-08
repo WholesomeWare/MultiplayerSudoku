@@ -1,5 +1,43 @@
 # Feladatok
 
+## Viki
+
+Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
+
+- [ ] Frontend
+  - [x] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
+  - [x] `LoginActivity.kt`
+  - [ ] `MainActivity.kt`
+    - [x] Alap kinézet a fő funkcióknak
+    - [ ] Fiók törlés lehetőség (lehetőleg egy dialógus is legyen ott, ne lehessen olyan könnyen véletlen törölni)
+  - [ ] `LobbyActivity.kt` elkészítése (ehez lehet majd rajzolok)
+  - [ ] `GameActivity.kt`
+  - [ ] Többnyelvűség: összekötés felülettel és magyar string-ek megírása (az app alapértelmezett nyelve angol lesz, szóval a sima `strings.xml`-ben angol szövegek lesznek)
+- [ ] API
+  - [x] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
+  - [x] Regisztrálás és bejelentkezés email-jelszó kombóval: `firebase/Auth.kt` függvényeit használva a `LoginActivity.kt`-ben
+  - [x] Kijelentkezés lehetőség a menüben: `firebase/Auth.kt`-ből a `signOut()` függvényt használva a `MainActivity.kt`-ben
+  - [ ] Firestore adatbázishoz tartozó kódokban segítség
+  - Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
+
+## Csáki
+
+- [ ] Frontend
+  - [ ] Figma: `LobbyActivity.kt`
+  - [ ] Márka implementálása
+- [ ] Adatszerkezetek kialakítása
+  - [x] Player
+  - [ ] Room
+- [ ] Adatbázis létrehozása
+  - [x] Firestore adatbázis létrehozása Firebase projektben
+  - [ ] Biztonsági szabályok megírása
+- [ ] API kódok írása
+  - [ ] Auth
+    - [x] Email-jelszó kombós regisztrálás, bejelentkezés, kijelentkezés kódja
+    - [ ] Google bejelentkezés kódja
+  - [ ] Firestore
+    - [ ] Listener függvények a játék követéséhez
+
 ## Bónusz tartalmak csak úgy szórakozásnak
 
 - [Material 3](https://m3.material.io/)
@@ -12,36 +50,3 @@
 - [[Eszköz] Pictogrammers (extended Material Design icon library)](https://pictogrammers.com/library/mdi/)
 - [Jetpack Compose kurzus Google-től](https://developer.android.com/courses/android-basics-compose/unit-1), de úgyis megdumálunk mindent meg szívesen megtanítok mindent én is
 - Segítségért zaklass vagy ha épp nem vagyok elérhető, ezt ajánlom: [Jetpack Compose tutorial lejátszási lista](https://youtube.com/playlist?list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&si=B8b-Gfaqi5kq7B4x) (kicsit régi, de a legtöbb dolog még mindig ugyanúgy működik)
-
-## Fő feladatok
-
-Úgy tervezem, hogy neked adom Viki a frontend-et és API kommunikálást. Szóval a kinézet egy részét te csinálod és az adatbázissal kommunikálás egy részét is. Én megírom az API-hoz kódot, amiket csak használnod kell, és csinálok mindent a Firebase oldalon. Meg nyilván segítek mindenben, amiben csak tudok.
-
-### Viki
-
-Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
-
-- [ ] Frontend
-  - [x] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
-  - [x] Bejelentkező felület: `LoginActivity.kt`
-    - [ ] Kiegészítés regisztrálás gombbal, esetleg az app nevével
-  - [ ] Menü felülete: `MainActivity.kt`
-  - [ ] Sudoku feladvány kinézete: `ui/components/SudokuDisplay.kt`
-- [ ] API
-  - [ ] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
-  - [ ] Regisztrálás és bejelentkezés email-jelszó kombóval: `firebase/Auth.kt` függvényeit használva a `LoginActivity.kt`-ben
-  - [ ] Kijelentkezés lehetőség a menüben: `firebase/Auth.kt`-ből a `signOut()` függvényt használva a `MainActivity.kt`-ben
-  - Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
-
-### Csáki
-
-- [ ] Adatszerkezetek kialakítása
-- [ ] Adatbázis létrehozása
-  - [x] Firestore adatbázis létrehozása Firebase projektben
-  - [ ] Biztonsági szabályok megírása
-- [ ] API kódok írása
-  - [ ] Auth
-    - [x] Email-jelszó kombós regisztrálás, bejelentkezés, kijelentkezés kódja
-    - [ ] Google bejelentkezés kódja
-  - [ ] Firestore
-    - [ ] Lobby kezelés

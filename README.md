@@ -64,19 +64,3 @@ https://github.com/CsakiTheOne/MultiplayerSudoku
 | Design nyelv      | [Material 3 (You)](https://youtu.be/UHQPdP8qgrk?si=In52HxRv-RPCS1Ho)                                        | [Material 2](https://youtu.be/6HCeBHVPxEg?si=aAPgZZ_-QcnAIkd9) |
 | Auth és adatbázis | [Firebase](https://youtu.be/vAoB4VbhRzM?si=zKo3aOUPglVwACgd)                                                | -                                                              |
 | Build system      | [Gradle](https://youtu.be/kNswjy2hPHI?si=Uzcj6_JKzQv-8NAm)                                                  | Gradle                                                         |
-
-## Kérdések, amiket meg kéne dumálni
-
-### Legyen többnyelvűség támogatás?
-
-Mehet
-
-### Márkám mehet az appba? :D
-
-Mehet
-
-### Hány játékos játszhat együtt és hogyan?
-
-1-2? 1-4? Csak 2? Lehessen egyáltalán egyedül? Vagy legyen felső határ? Talán az a legegyszerűbb,
-ha egyedül is lehet és nincs felső határ. Talán azt a legkönnyebb lekódolni.
-Arra gondoltam, hogy ilyen party rendszer lehetne, meghívó kódokkal.
