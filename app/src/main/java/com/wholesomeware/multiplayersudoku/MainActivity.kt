@@ -6,19 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -41,12 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wholesomeware.multiplayersudoku.firebase.Auth
+import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,6 +62,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    private fun DeleteAccountDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = "Fiók törlése") },
+            text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
+            confirmButton = {
+                Button(
+                    onClick = onConfirm,
+                ) {
+                    Text(text = "Törlés")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = onDismiss,
+                ) {
+                    Text(text = "Mégse")
+                }
+            }
+        )
+    }
     @OptIn(ExperimentalMaterial3Api::class)
     @Preview
     @Composable
@@ -75,6 +93,33 @@ class MainActivity : ComponentActivity() {
 
             var isMenuOpen by remember { mutableStateOf(false) }
             var inviteCode by rememberSaveable { mutableStateOf("") }
+            var showDialog by remember { mutableStateOf(false) }
+
+            if (showDialog) {
+                DeleteAccountDialog(
+                    onConfirm = {
+                        val currentUser = Auth.getCurrentUser()
+                        if (currentUser != null) {
+                            Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
+                                if (isSuccess) {
+                                    Auth.signOut()
+                                    startActivity(
+                                        Intent(
+                                            this@MainActivity,
+                                            LoginActivity::class.java
+                                        )
+                                    )
+                                    finish()
+                                }
+                            }
+                        }
+                    },
+                    onDismiss = {
+                        showDialog = false
+                        isMenuOpen = false
+                    }
+                )
+            }
 
             // Ez a surface az alkalmazás háttere. Ennek a belsejébe rakd az elemeket.
             Surface(
@@ -118,7 +163,13 @@ class MainActivity : ComponentActivity() {
                                             finish()
                                         }
                                     )
-                                    //TODO: fiók törlés
+                                    DropdownMenuItem(
+                                        text = { Text(text = "Fiók törlése") },
+                                        onClick = {
+                                            isMenuOpen = false
+                                            showDialog = true
+                                        }
+                                    )
                                 }
                             }
                         },
