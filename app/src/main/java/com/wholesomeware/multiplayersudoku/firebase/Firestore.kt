@@ -1,5 +1,6 @@
 package com.wholesomeware.multiplayersudoku.firebase
 
+import com.google.firebase.firestore.FieldPath
 import com.wholesomeware.multiplayersudoku.App
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
@@ -29,6 +30,22 @@ class Firestore {
                 // hogy a velünk egy szobában lévő játékosokat lekérjük.
                 // Firebase doksi segítségként:
                 // https://firebase.google.com/docs/firestore/query-data/queries?authuser=0#kotlin+ktx_1
+
+                App.instance.firestore.collection("players")
+                    .whereIn(FieldPath.documentId(), ids).get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val players = mutableListOf<Player>()
+
+                        for (document in querySnapshot) {
+                            val player = document.toObject(Player::class.java)
+                                .copy(id = document.id)
+                            players.add(player)
+                        }
+                        onResult(players)
+                    }
+                    .addOnFailureListener {
+                        onResult(emptyList())
+                    }
             }
 
             /**
@@ -78,6 +95,11 @@ class Firestore {
             fun setRoom(room: Room, onResult: (Boolean) -> Unit) {
                 //TODO: Szoba beállítása. Ezt lehet csinálni a Players.setPlayer mintájára.
                 // Ezzel fogjuk frissíteni a sudoku táblát és a játékosok listáját is.
+
+                App.instance.firestore.collection("rooms").document(room.id).set(room)
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
             }
 
             fun createRoom(onRoomCreated: (Room) -> Unit) {
