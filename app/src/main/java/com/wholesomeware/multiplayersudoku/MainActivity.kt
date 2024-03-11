@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,12 +43,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.csakitheone.wholesomeware_brand.WholesomeWare
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             MainScreen()
@@ -64,6 +69,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun DeleteAccountDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+        //TODO: gombok letiltása, míg várunk eredményre
         AlertDialog(
             onDismissRequest = onDismiss,
             title = { Text(text = "Fiók törlése") },
@@ -71,12 +77,16 @@ class MainActivity : ComponentActivity() {
             confirmButton = {
                 Button(
                     onClick = onConfirm,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    )
                 ) {
                     Text(text = "Törlés")
                 }
             },
             dismissButton = {
-                Button(
+                TextButton(
                     onClick = onDismiss,
                 ) {
                     Text(text = "Mégse")
@@ -102,14 +112,17 @@ class MainActivity : ComponentActivity() {
                         if (currentUser != null) {
                             Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
                                 if (isSuccess) {
-                                    Auth.signOut()
-                                    startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            LoginActivity::class.java
-                                        )
-                                    )
-                                    finish()
+                                    Auth.deleteCurrentUser {
+                                        if (it) {
+                                            startActivity(
+                                                Intent(
+                                                    this@MainActivity,
+                                                    LoginActivity::class.java
+                                                )
+                                            )
+                                            finish()
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -134,7 +147,9 @@ class MainActivity : ComponentActivity() {
                         navigationIcon = {
                             //TODO: app ikon ide
                             Icon(
-                                modifier = Modifier.width(48.dp).aspectRatio(1f),
+                                modifier = Modifier
+                                    .width(48.dp)
+                                    .aspectRatio(1f),
                                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                                 contentDescription = null,
                             )

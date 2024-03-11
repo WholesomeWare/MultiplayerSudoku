@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.wholesomeware.multiplayersudoku.firebase.Auth
+import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class LobbyActivity : ComponentActivity() {
@@ -28,11 +30,18 @@ class LobbyActivity : ComponentActivity() {
     @Composable
     private fun LobbyScreen() {
         MultiplayerSudokuTheme {
+            var room by remember { mutableStateOf(Room()) }
+
+            //TODO: játékos lista, kezdés gomb és nehézség állítás a tulajnak
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-
+                Text(
+                    text = if (room.ownerId == Auth.getCurrentUser()?.uid) "Tulaj vagyok"
+                    else "Vendég vagyok"
+                )
             }
         }
     }

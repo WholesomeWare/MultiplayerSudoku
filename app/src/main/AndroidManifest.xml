@@ -32,7 +32,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.MultiplayerSudoku">
+            android:theme="@style/Theme.MultiplayerSudoku.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

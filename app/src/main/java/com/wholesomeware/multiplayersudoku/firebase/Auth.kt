@@ -70,5 +70,13 @@ class Auth {
             auth.signOut()
         }
 
+        fun deleteCurrentUser(onResult: (Boolean) -> Unit) {
+            auth.currentUser?.delete()
+                ?.addOnCompleteListener {
+                    onResult(it.isSuccessful)
+                    if (it.isSuccessful) signOut()
+                }
+        }
+
     }
 }

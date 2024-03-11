@@ -35,6 +35,8 @@ fun SudokuDisplay(
     onCellClick: (Int, Int) -> Unit,
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
+    //TODO Csákinak: cella kiválasztás és írható cellák megkülönböztetése
+
     Box(
         modifier = modifier,
     ) {
