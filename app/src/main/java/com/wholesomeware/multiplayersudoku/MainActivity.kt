@@ -93,8 +93,7 @@ class MainActivity : ComponentActivity() {
                                 id = Auth.getCurrentUser()!!.uid,
                                 name = Auth.getCurrentUser()!!.displayName ?: "",
                             )
-                        }
-                        else null
+                        } else null
                 }
             }
 
@@ -287,7 +286,15 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(8.dp),
                             )
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    //TODO: invite code generálás, adatbázisba mentés és extraként küldés activity-nek
+                                    startActivity(
+                                        Intent(
+                                            this@MainActivity,
+                                            LobbyActivity::class.java
+                                        )
+                                    )
+                                },
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .align(Alignment.End),

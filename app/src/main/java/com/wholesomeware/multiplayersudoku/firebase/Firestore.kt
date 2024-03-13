@@ -31,10 +31,10 @@ class Firestore {
             }
 
             fun getPlayersByIds(ids: List<String>, onResult: (List<Player>) -> Unit) {
-                //TODO: Játékosok lekérése azonosítók alapján. Ez ahhoz kell,
-                // hogy a velünk egy szobában lévő játékosokat lekérjük.
-                // Firebase doksi segítségként:
-                // https://firebase.google.com/docs/firestore/query-data/queries?authuser=0#kotlin+ktx_1
+                if (ids.isEmpty()) {
+                    onResult(emptyList())
+                    return
+                }
 
                 App.instance.firestore.collection("players")
                     .whereIn(FieldPath.documentId(), ids).get()
