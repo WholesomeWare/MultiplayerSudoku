@@ -13,7 +13,12 @@ class Firestore {
              * Lekér egy játékost azonosító alapján.
              * @param id A játékos azonosítója. Megegyezik a Firebase uid-vel.
              */
-            fun getPlayerById(id: String, onResult: (Player?) -> Unit) {
+            fun getPlayerById(id: String?, onResult: (Player?) -> Unit) {
+                if (id.isNullOrBlank()) {
+                    onResult(null)
+                    return
+                }
+
                 App.instance.firestore.collection("players").document(id).get()
                     .addOnSuccessListener {
                         val player = it.toObject(Player::class.java) // Itt lesz az adatból játékor objektum

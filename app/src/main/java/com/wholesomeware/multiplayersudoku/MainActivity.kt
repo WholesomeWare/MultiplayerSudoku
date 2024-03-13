@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,9 +48,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.csakitheone.wholesomeware_brand.WholesomeWare
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
+import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class MainActivity : ComponentActivity() {
@@ -67,33 +71,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    private fun DeleteAccountDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-        //TODO: gombok letiltása, míg várunk eredményre
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(text = "Fiók törlése") },
-            text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
-            confirmButton = {
-                Button(
-                    onClick = onConfirm,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                    )
-                ) {
-                    Text(text = "Törlés")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = onDismiss,
-                ) {
-                    Text(text = "Mégse")
-                }
-            }
-        )
-    }
     @OptIn(ExperimentalMaterial3Api::class)
     @Preview
     @Composable
@@ -101,40 +78,111 @@ class MainActivity : ComponentActivity() {
         MultiplayerSudokuTheme {
             //TODO: Szépítgetés, becenév szerkesztés, fiók törlés
 
-            var isMenuOpen by remember { mutableStateOf(false) }
-            var inviteCode by rememberSaveable { mutableStateOf("") }
-            var showDialog by remember { mutableStateOf(false) }
+            var player by remember { mutableStateOf<Player?>(null) }
 
-            if (showDialog) {
-                DeleteAccountDialog(
-                    onConfirm = {
-                        val currentUser = Auth.getCurrentUser()
-                        if (currentUser != null) {
-                            Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
-                                if (isSuccess) {
-                                    Auth.deleteCurrentUser {
-                                        if (it) {
-                                            startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    LoginActivity::class.java
-                                                )
-                                            )
-                                            finish()
+            var isMenuOpen by remember { mutableStateOf(false) }
+            var isEditNicknameDialogOpen by remember { mutableStateOf(false) }
+            var isRemoveAccountDialogOpen by remember { mutableStateOf(false) }
+            var inviteCode by rememberSaveable { mutableStateOf("") }
+
+            LaunchedEffect(isEditNicknameDialogOpen) {
+                Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
+                    player = it
+                        ?: if (Auth.getCurrentUser() != null) {
+                            Player(
+                                id = Auth.getCurrentUser()!!.uid,
+                                name = Auth.getCurrentUser()!!.displayName ?: "",
+                            )
+                        }
+                        else null
+                }
+            }
+
+            if (isEditNicknameDialogOpen) {
+                AlertDialog(
+                    title = { Text(text = "Becenév szerkesztése") },
+                    text = {
+                        TextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = player?.name ?: "",
+                            onValueChange = {
+                                player = player?.copy(name = it)
+                            },
+                        )
+                    },
+                    onDismissRequest = { isEditNicknameDialogOpen = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                Firestore.Players.setPlayer(player!!) { isSaved ->
+                                    if (isSaved) {
+                                        isEditNicknameDialogOpen = false
+                                    } else {
+                                        Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
+                                            player = it
                                         }
                                     }
                                 }
                             }
+                        ) {
+                            Text(text = "Mentés")
                         }
                     },
-                    onDismiss = {
-                        showDialog = false
-                        isMenuOpen = false
+                    dismissButton = {
+                        TextButton(
+                            onClick = { isEditNicknameDialogOpen = false },
+                        ) {
+                            Text(text = "Mégse")
+                        }
                     }
                 )
             }
 
-            // Ez a surface az alkalmazás háttere. Ennek a belsejébe rakd az elemeket.
+            if (isRemoveAccountDialogOpen) {
+                AlertDialog(
+                    title = { Text(text = "Fiók törlése") },
+                    text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
+                    onDismissRequest = { isRemoveAccountDialogOpen = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val currentUser = Auth.getCurrentUser()
+                                if (currentUser != null) {
+                                    Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
+                                        if (isSuccess) {
+                                            Auth.deleteCurrentUser {
+                                                if (it) {
+                                                    startActivity(
+                                                        Intent(
+                                                            this@MainActivity,
+                                                            LoginActivity::class.java
+                                                        )
+                                                    )
+                                                    finish()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            )
+                        ) {
+                            Text(text = "Törlés")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { isRemoveAccountDialogOpen = false },
+                        ) {
+                            Text(text = "Mégse")
+                        }
+                    }
+                )
+            }
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
@@ -164,8 +212,27 @@ class MainActivity : ComponentActivity() {
                                     expanded = isMenuOpen,
                                     onDismissRequest = { isMenuOpen = false }
                                 ) {
-                                    //TODO: becenév szerkesztés
                                     DropdownMenuItem(
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Default.Label,
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        text = { Text(text = "Becenév szerkesztése") },
+                                        onClick = {
+                                            isEditNicknameDialogOpen = true
+                                            isMenuOpen = false
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Default.Logout,
+                                                contentDescription = null,
+                                            )
+
+                                        },
                                         text = { Text(text = "Kijelentkezés") },
                                         onClick = {
                                             Auth.signOut()
@@ -179,10 +246,16 @@ class MainActivity : ComponentActivity() {
                                         }
                                     )
                                     DropdownMenuItem(
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.DeleteForever,
+                                                contentDescription = null,
+                                            )
+                                        },
                                         text = { Text(text = "Fiók törlése") },
                                         onClick = {
+                                            isRemoveAccountDialogOpen = true
                                             isMenuOpen = false
-                                            showDialog = true
                                         }
                                     )
                                 }
