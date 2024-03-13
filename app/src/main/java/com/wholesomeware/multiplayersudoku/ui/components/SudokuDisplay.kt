@@ -33,6 +33,7 @@ fun SudokuDisplay(
     modifier: Modifier = Modifier,
     sudoku: Sudoku,
     onCellClick: (Int, Int) -> Unit,
+    selectedCell: Pair<Int, Int>? = null,
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     //TODO Csákinak: cella kiválasztás és írható cellák megkülönböztetése
@@ -64,6 +65,7 @@ fun SudokuDisplay(
                                 .aspectRatio(1f),
                             value = column,
                             onClick = { onCellClick(rowIndex, columnIndex) },
+                            isSelected = selectedCell?.first == rowIndex && selectedCell.second == columnIndex,
                             borderColor = cellBorderColor,
                         )
                     }
@@ -82,12 +84,17 @@ fun SudokuCell(
     modifier: Modifier = Modifier,
     value: Int,
     onClick: () -> Unit,
+    isSelected: Boolean = false,
     borderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     Box(
         modifier = modifier
             .border(.01f.dp, borderColor)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else Color.Transparent
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (value != 0) {
