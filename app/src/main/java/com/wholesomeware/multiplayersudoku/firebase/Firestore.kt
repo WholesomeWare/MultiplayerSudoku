@@ -2,6 +2,7 @@ package com.wholesomeware.multiplayersudoku.firebase
 
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.App
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
@@ -22,8 +23,9 @@ class Firestore {
 
                 App.instance.firestore.collection("players").document(id).get()
                     .addOnSuccessListener {
-                        val player = it.toObject(Player::class.java) // Itt lesz az adatból játékor objektum
-                            ?.copy(id = it.id) // A játékos objektum id-jét beállítjuk a dokumentum id-jére, mert nem garantált, hogy megegyezik
+                        val player =
+                            it.toObject(Player::class.java) // Itt lesz az adatból játékor objektum
+                                ?.copy(id = it.id) // A játékos objektum id-jét beállítjuk a dokumentum id-jére, mert nem garantált, hogy megegyezik
                         onResult(player)
                     }
                     .addOnFailureListener {
@@ -79,8 +81,34 @@ class Firestore {
 
         }
     }
+
     class Rooms {
         companion object {
+
+            private val roomListeners = mutableListOf<ListenerRegistration>()
+
+            fun addRoomListener(id: String, listener: (Room?) -> Unit): ListenerRegistration {
+                val registration = App.instance.firestore
+                    .collection("rooms")
+                    .document(id)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            listener(null)
+                            return@addSnapshotListener
+                        }
+
+                        val room = snapshot?.toObject(Room::class.java)
+                            ?.copy(id = snapshot.id)
+                        listener(room)
+                    }
+                roomListeners.add(registration)
+                return registration
+            }
+
+            fun removeAllRoomListeners() {
+                roomListeners.forEach { it.remove() }
+                roomListeners.clear()
+            }
 
             /**
              * Lekér egy szobát azonosító alapján.

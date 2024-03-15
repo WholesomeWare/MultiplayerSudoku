@@ -346,12 +346,13 @@ class MainActivity : ComponentActivity() {
                             )
 
                             Button(
+                                enabled = inviteCode.isNotBlank(),
                                 onClick = {
                                     startActivity(
                                         Intent(
                                             this@MainActivity,
                                             LobbyActivity::class.java
-                                        ).putExtra(LobbyActivity.EXTRA_ROOM_ID, inviteCode)
+                                        ).putExtra(LobbyActivity.EXTRA_ROOM_ID, inviteCode.trim())
                                     )
                                 },
                                 modifier = Modifier

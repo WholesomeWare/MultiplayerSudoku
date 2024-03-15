@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,43 +17,44 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Start
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
+import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
+import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
+import kotlinx.coroutines.launch
 
 class LobbyActivity : ComponentActivity() {
     companion object {
@@ -64,17 +62,22 @@ class LobbyActivity : ComponentActivity() {
     }
 
     private var roomId by mutableStateOf<String?>(null)
+    private var room by mutableStateOf(Room())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LobbyScreen()
         }
+
         roomId = intent.getStringExtra(EXTRA_ROOM_ID)
         if (roomId == null) {
             Toast.makeText(this, "Nem található a szoba", Toast.LENGTH_SHORT).show()
             finish()
             return
+        }
+        Firestore.Rooms.addRoomListener(roomId!!) {
+            room = it ?: return@addRoomListener
         }
         Firestore.Rooms.joinRoom(roomId!!) {
             if (!it) {
@@ -86,6 +89,7 @@ class LobbyActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        Firestore.Rooms.removeAllRoomListeners()
         Firestore.Rooms.leaveRoom(roomId!!) {}
         super.onDestroy()
     }
@@ -95,13 +99,17 @@ class LobbyActivity : ComponentActivity() {
     @Composable
     private fun LobbyScreen() {
         MultiplayerSudokuTheme {
-            var room by remember { mutableStateOf(Room()) }
+            val coroutineScope = rememberCoroutineScope()
+
             val isOwner by remember(room) {
                 mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid)
             }
             var ownerPlayer by remember { mutableStateOf(Player()) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
-            var selectedDifficulty by remember { mutableStateOf(Sudoku.Difficulty.EASY) }
+            var selectedDifficulty by remember(room) {
+                mutableStateOf(Sudoku.Difficulty.entries[room.difficultyId])
+            }
+            var isDifficultySelectorOpen by remember { mutableStateOf(false) }
 
             LaunchedEffect(roomId) {
                 if (roomId == null) return@LaunchedEffect
@@ -204,20 +212,88 @@ class LobbyActivity : ComponentActivity() {
 
                     BottomAppBar(
                         actions = {
-                            Text(text = "valami")
+                            ExposedDropdownMenuBox(
+                                expanded = isDifficultySelectorOpen,
+                                onExpandedChange = { isDifficultySelectorOpen = it },
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier
+                                        .menuAnchor()
+                                        .width(200.dp)
+                                        .padding(horizontal = 8.dp),
+                                    enabled = !room.isStarted && isOwner,
+                                    label = { Text(text = "Nehézség") },
+                                    value = selectedDifficulty.name,
+                                    onValueChange = {},
+                                    maxLines = 1,
+                                    readOnly = true,
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = if (isDifficultySelectorOpen) Icons.Default.ArrowDropUp
+                                            else Icons.Default.ArrowDropDown,
+                                            contentDescription = null,
+                                        )
+                                    },
+                                )
+                                ExposedDropdownMenu(
+                                    expanded = isDifficultySelectorOpen,
+                                    onDismissRequest = { isDifficultySelectorOpen = false },
+                                ) {
+                                    Sudoku.Difficulty.entries.forEach { difficulty ->
+                                        DropdownMenuItem(
+                                            onClick = {
+                                                selectedDifficulty = difficulty
+                                                isDifficultySelectorOpen = false
+                                                Firestore.Rooms.setRoom(
+                                                    room.copy(difficultyId = difficulty.ordinal)
+                                                ) {}
+                                            },
+                                            text = { Text(text = difficulty.name) }
+                                        )
+                                    }
+                                }
+                            }
                         },
                         floatingActionButton = {
                             ExtendedFloatingActionButton(
-                                onClick = { /*TODO*/ },
-
-                                ) {
-                                Icon(
-                                    Icons.Filled.PlayArrow,
-                                    contentDescription = "Csatlakozás ikon"
-                                )
-                                Text(text = "Indítás")
-                            }
-
+                                onClick = {
+                                    coroutineScope.launch {
+                                        val sudoku = SudokuGenerator.create(selectedDifficulty)
+                                        Firestore.Rooms.setRoom(
+                                            room.copy(
+                                                isStarted = true,
+                                                sudoku = SerializableSudoku.fromSudoku(sudoku),
+                                                startTime = System.currentTimeMillis(),
+                                            )
+                                        ) {
+                                            runOnUiThread {
+                                                if (it) {
+                                                    startActivity(
+                                                        Intent(
+                                                            this@LobbyActivity,
+                                                            GameActivity::class.java
+                                                        )
+                                                            .putExtra(EXTRA_ROOM_ID, room.id)
+                                                    )
+                                                } else {
+                                                    Toast.makeText(
+                                                        this@LobbyActivity,
+                                                        "Nem sikerült elindítani a játékot",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = null,
+                                    )
+                                },
+                                text = { Text(text = "Indítás") },
+                            )
                         }
                     )
                 }

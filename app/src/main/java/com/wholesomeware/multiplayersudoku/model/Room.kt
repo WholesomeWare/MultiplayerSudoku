@@ -4,8 +4,9 @@ data class Room(
     val id: String = "",
     val players: List<String> = emptyList(),
     val ownerId: String = "",
+    val difficultyId: Int = 0,
     val isStarted: Boolean = false,
-    val currentGrid: List<List<Int>> = emptyList(),
+    val sudoku: SerializableSudoku = SerializableSudoku(),
     val startTime: Long = 0,
     val startingHintsCount: Int = 0,
 )
