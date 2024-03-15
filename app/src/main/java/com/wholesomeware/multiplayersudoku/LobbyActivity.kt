@@ -1,14 +1,19 @@
 package com.wholesomeware.multiplayersudoku
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -50,14 +55,39 @@ import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
+import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class LobbyActivity : ComponentActivity() {
+    companion object {
+        const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
+    }
+
+    private var roomId by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LobbyScreen()
         }
+        roomId = intent.getStringExtra(EXTRA_ROOM_ID)
+        if (roomId == null) {
+            Toast.makeText(this, "Nem található a szoba", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        Firestore.Rooms.joinRoom(roomId!!) {
+            if (!it) {
+                Toast.makeText(this, "Nem sikerült csatlakozni a szobához", Toast.LENGTH_SHORT)
+                    .show()
+                finish()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        Firestore.Rooms.leaveRoom(roomId!!) {}
+        super.onDestroy()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -69,13 +99,22 @@ class LobbyActivity : ComponentActivity() {
             val isOwner by remember(room) {
                 mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid)
             }
+            var ownerPlayer by remember { mutableStateOf(Player()) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
             var selectedDifficulty by remember { mutableStateOf(Sudoku.Difficulty.EASY) }
+
+            LaunchedEffect(roomId) {
+                if (roomId == null) return@LaunchedEffect
+                Firestore.Rooms.getRoomById(roomId!!) {
+                    room = it ?: return@getRoomById
+                }
+            }
 
             // Ez az effect akkor fut le, amikor a szobában valami megváltozik.
             LaunchedEffect(room) {
                 // Lekérjük a játékosokat id alapján, mert a `room` csak az id-jüket tárolja
                 Firestore.Players.getPlayersByIds(room.players) {
+                    ownerPlayer = it.firstOrNull { player -> player.id == room.ownerId } ?: Player()
                     players = it
                 }
             }
@@ -87,16 +126,12 @@ class LobbyActivity : ComponentActivity() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 Column {
-                    Text(
-                        text = if (isOwner) "Tulaj vagyok"
-                        else "Vendég vagyok"
-                    )
                     CenterAlignedTopAppBar(
                         title = {
-                            Text(text = "X szobája")
+                            Text(text = "${ownerPlayer.name} szobája")
                         },
                         navigationIcon = {
-                            IconButton(onClick = { /* do something */ }) {
+                            IconButton(onClick = { finish() }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
@@ -104,51 +139,78 @@ class LobbyActivity : ComponentActivity() {
                             }
                         },
                     )
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Gray,
-                        ),
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text(
-                            text = "Hívd meg a barátaidat, és játszatok együtt",
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-
-
 
                     Column(
-                        modifier = Modifier.verticalScroll(rememberScrollState())
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
                     ) {
-                        // Ha meg akarjuk jeleníteni az összes játékost akkor egy ciklussal simán végigmehetünk rajtuk.
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(
+                                text = "Hívd meg a barátaidat, és játszatok együtt!",
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                         players.forEach { player ->
-                            Row {
+                            PlayerDisplay(
+                                player = player,
+                                adminControlsEnabled = isOwner,
+                                onKickRequest = {
+                                    //TODO: játékos kirúgása
+                                }
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    startActivity(
+                                        Intent.createChooser(
+                                            Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(
+                                                    Intent.EXTRA_TEXT,
+                                                    room.id,
+                                                )
+                                            },
+                                            "Megosztás"
+                                        )
+                                    )
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
                                 Icon(
-                                    imageVector = Icons.Default.AccountCircle,
+                                    modifier = Modifier.padding(8.dp),
+                                    imageVector = Icons.Default.Add,
                                     contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
-                                Text(text = player.name)
+                                Text(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .weight(1f),
+                                    text = "Játékos meghívása",
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
                             }
-
-                            // Ide kell megadni, hogy hogyan nézzen ki 1 játékos.
-                            // Az itteni UI elemek fognak ismétlődni játékosonként.
                         }
                     }
 
-                    // Játékosok alá egy meghívás gomb, ami intent-el megosztja a meghívó kódot
-                    // minden appnak, ami tud szöveget fogadni.
-
                     BottomAppBar(
-
                         actions = {
-                                  Text(text = "valami")
+                            Text(text = "valami")
                         },
                         floatingActionButton = {
                             ExtendedFloatingActionButton(
                                 onClick = { /*TODO*/ },
 
-                            ){
+                                ) {
                                 Icon(
                                     Icons.Filled.PlayArrow,
                                     contentDescription = "Csatlakozás ikon"
@@ -157,7 +219,6 @@ class LobbyActivity : ComponentActivity() {
                             }
 
                         }
-
                     )
                 }
             }

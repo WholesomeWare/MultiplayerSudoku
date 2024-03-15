@@ -2,6 +2,7 @@ package com.wholesomeware.multiplayersudoku
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -287,13 +288,22 @@ class MainActivity : ComponentActivity() {
                             )
                             Button(
                                 onClick = {
-                                    //TODO: invite code generálás, adatbázisba mentés és extraként küldés activity-nek
-                                    startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            LobbyActivity::class.java
-                                        )
-                                    )
+                                    RoomManager.createRoom { id ->
+                                        if (id != null) {
+                                            startActivity(
+                                                Intent(
+                                                    this@MainActivity,
+                                                    LobbyActivity::class.java
+                                                ).putExtra(LobbyActivity.EXTRA_ROOM_ID, id)
+                                            )
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Nem sikerült létrehozni a szobát. Próbáld újra később.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
                                 },
                                 modifier = Modifier
                                     .padding(8.dp)
@@ -301,7 +311,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Icon(
                                     Icons.Filled.Add,
-                                    contentDescription = "Csatlakozás ikon"
+                                    contentDescription = null
                                 )
                                 Text(
                                     "Létrehozás",
@@ -328,20 +338,22 @@ class MainActivity : ComponentActivity() {
 
                             TextField(
                                 value = inviteCode,
-                                onValueChange = { inviteCode = it },
-                                placeholder = {
-                                    Text(
-                                        "Kód",
-                                        fontSize = 14.sp
-                                    )
-                                },
+                                onValueChange = { inviteCode = it.uppercase() },
+                                placeholder = { Text(text ="Kód") },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
                             )
 
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    startActivity(
+                                        Intent(
+                                            this@MainActivity,
+                                            LobbyActivity::class.java
+                                        ).putExtra(LobbyActivity.EXTRA_ROOM_ID, inviteCode)
+                                    )
+                                },
                                 modifier = Modifier
                                     .padding(8.dp)
                                     .align(Alignment.End),

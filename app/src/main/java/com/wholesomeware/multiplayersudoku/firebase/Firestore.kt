@@ -1,6 +1,7 @@
 package com.wholesomeware.multiplayersudoku.firebase
 
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.wholesomeware.multiplayersudoku.App
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
@@ -97,21 +98,42 @@ class Firestore {
                     }
             }
 
+            /**
+             * Beállít egy szobát azonosító alapján. Ha a szoba nem létezik, akkor létrehozza.
+             */
             fun setRoom(room: Room, onResult: (Boolean) -> Unit) {
-                //TODO: Szoba beállítása. Ezt lehet csinálni a Players.setPlayer mintájára.
-                // Ezzel fogjuk frissíteni a sudoku táblát és a játékosok listáját is.
-
                 App.instance.firestore.collection("rooms").document(room.id).set(room)
                     .addOnCompleteListener {
                         onResult(it.isSuccessful)
                     }
             }
 
-            fun createRoom(onRoomCreated: (Room) -> Unit) {
-                val ownerId = Auth.getCurrentUser()?.uid ?: return
+            fun deleteRoomById(id: String, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("rooms").document(id).delete()
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
+            }
 
-                //TODO: Szoba létrehozása. Itt kellene generálnunk egy rövid meghívó kódot is,
-                // aztán amint sikerül fölrakni az új szobát adatbázisba, visszaadjuk a felhasználónak.
+            fun joinRoom(id: String, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("rooms").document(id)
+                    .update("players", FieldValue.arrayUnion(Auth.getCurrentUser()?.uid))
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
+            }
+
+            fun leaveRoom(id: String, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("rooms").document(id)
+                    .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()?.uid))
+                    .addOnCompleteListener { leaveTask ->
+                        onResult(leaveTask.isSuccessful)
+                        getRoomById(id) { room ->
+                            if (room?.players?.isEmpty() == true) {
+                                deleteRoomById(id) {}
+                            }
+                        }
+                    }
             }
 
         }
