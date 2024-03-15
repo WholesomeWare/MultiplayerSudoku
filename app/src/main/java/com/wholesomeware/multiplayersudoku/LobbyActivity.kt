@@ -226,7 +226,7 @@ class LobbyActivity : ComponentActivity() {
                                         .padding(horizontal = 8.dp),
                                     enabled = !room.isStarted && isOwner,
                                     label = { Text(text = "Nehézség") },
-                                    value = selectedDifficulty.name,
+                                    value = stringResource(id = selectedDifficulty.stringResourceId),
                                     onValueChange = {},
                                     maxLines = 1,
                                     readOnly = true,
