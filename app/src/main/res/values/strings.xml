@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Multiplayer Sudoku</string>
 
-    <string name="login_error">Check your login credentials and try again.</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
 
     <!-- LoginActivity -->
     <string name="email">E-mail</string>
@@ -9,6 +11,7 @@
     <string name="register">Register</string>
     <string name="login">Log in</string>
     <string name="login_with_google">Log in with Google account</string>
+    <string name="login_error">Check your login credentials and try again.</string>
 
     <!-- MainActivity -->
 

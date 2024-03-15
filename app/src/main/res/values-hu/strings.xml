@@ -2,7 +2,9 @@
 <resources>
     <string name="app_name">Többjátékos Sudoku</string>
 
-    <string name="login_error">Ellenőrizd a bejelentkezési adatokat, és próbáld újra.</string>
+    <string name="difficulty_easy">Könnyű</string>
+    <string name="difficulty_medium">Közepes</string>
+    <string name="difficulty_hard">Nehéz</string>
 
     <!-- LoginActivity -->
     <string name="email">E-mail cím</string>
@@ -10,6 +12,7 @@
     <string name="register">Regisztráció</string>
     <string name="login">Bejelentkezés</string>
     <string name="login_with_google">Bejelentkezés Google fiókkal</string>
+    <string name="login_error">Ellenőrizd a bejelentkezési adatokat, és próbáld újra.</string>
 
     <!-- MainActivity -->
 
