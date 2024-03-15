@@ -53,6 +53,7 @@ import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
+import com.wholesomeware.multiplayersudoku.ui.components.BlockableExtendedFAB
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 import kotlinx.coroutines.launch
@@ -256,7 +257,8 @@ class LobbyActivity : ComponentActivity() {
                             }
                         },
                         floatingActionButton = {
-                            ExtendedFloatingActionButton(
+                            BlockableExtendedFAB(
+                                enabled = isOwner || room.isStarted,
                                 onClick = {
                                     coroutineScope.launch {
                                         val sudoku = SudokuGenerator.create(selectedDifficulty)
