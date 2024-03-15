@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
@@ -61,8 +62,8 @@ class LobbyActivity : ComponentActivity() {
         const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
     }
 
-    private var roomId by mutableStateOf<String?>(null)
     private var room by mutableStateOf(Room())
+    private var roomListenerRegistration: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,28 +71,35 @@ class LobbyActivity : ComponentActivity() {
             LobbyScreen()
         }
 
-        roomId = intent.getStringExtra(EXTRA_ROOM_ID)
+        initializeRoom()
+    }
+
+    override fun onDestroy() {
+        roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
+        Firestore.Rooms.leaveRoom(room.id) {}
+        super.onDestroy()
+    }
+
+    private fun initializeRoom() {
+        val roomId = intent.getStringExtra(EXTRA_ROOM_ID)
         if (roomId == null) {
             Toast.makeText(this, "Nem található a szoba", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
-        Firestore.Rooms.addRoomListener(roomId!!) {
+        Firestore.Rooms.getRoomById(roomId) {
+            room = it ?: return@getRoomById
+        }
+        roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
             room = it ?: return@addRoomListener
         }
-        Firestore.Rooms.joinRoom(roomId!!) {
+        Firestore.Rooms.joinRoom(roomId) {
             if (!it) {
                 Toast.makeText(this, "Nem sikerült csatlakozni a szobához", Toast.LENGTH_SHORT)
                     .show()
                 finish()
             }
         }
-    }
-
-    override fun onDestroy() {
-        Firestore.Rooms.removeAllRoomListeners()
-        Firestore.Rooms.leaveRoom(roomId!!) {}
-        super.onDestroy()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -110,13 +118,6 @@ class LobbyActivity : ComponentActivity() {
                 mutableStateOf(Sudoku.Difficulty.entries[room.difficultyId])
             }
             var isDifficultySelectorOpen by remember { mutableStateOf(false) }
-
-            LaunchedEffect(roomId) {
-                if (roomId == null) return@LaunchedEffect
-                Firestore.Rooms.getRoomById(roomId!!) {
-                    room = it ?: return@getRoomById
-                }
-            }
 
             // Ez az effect akkor fut le, amikor a szobában valami megváltozik.
             LaunchedEffect(room) {

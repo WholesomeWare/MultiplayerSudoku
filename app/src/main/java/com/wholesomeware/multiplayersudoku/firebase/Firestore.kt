@@ -105,6 +105,11 @@ class Firestore {
                 return registration
             }
 
+            fun removeRoomListener(registration: ListenerRegistration) {
+                registration.remove()
+                roomListeners.remove(registration)
+            }
+
             fun removeAllRoomListeners() {
                 roomListeners.forEach { it.remove() }
                 roomListeners.clear()
