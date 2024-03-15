@@ -1,5 +1,11 @@
 package com.wholesomeware.multiplayersudoku.sudoku
 
+import com.wholesomeware.multiplayersudoku.R
+
+/**
+ * A sudoku tábla reprezentációja. Adatbázisban nem tárolható,
+ * helyette a [com.wholesomeware.multiplayersudoku.model.SerializableSudoku] használatos!
+ */
 class Sudoku(
     var grid: Array<IntArray>,
 ) {
@@ -8,10 +14,20 @@ class Sudoku(
     }
 
     enum class Difficulty(
+        val stringResourceId: Int,
         val filledCellsCount: Int,
     ) {
-        EASY(35),
-        MEDIUM(25),
-        HARD(15),
+        EASY(
+            R.string.difficulty_easy,
+            35,
+        ),
+        MEDIUM(
+            R.string.difficulty_medium,
+            25,
+        ),
+        HARD(
+            R.string.difficulty_hard,
+            15,
+        ),
     }
 }

@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
-            //TODO: Szépítgetés, becenév szerkesztés, fiók törlés
+            //TODO: Szépítgetés, statisztikák
 
             var player by remember { mutableStateOf<Player?>(null) }
 

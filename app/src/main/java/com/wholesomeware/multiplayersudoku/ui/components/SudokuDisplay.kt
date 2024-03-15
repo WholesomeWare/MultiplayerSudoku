@@ -36,7 +36,7 @@ fun SudokuDisplay(
     selectedCell: Pair<Int, Int>? = null,
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    //TODO Csákinak: cella kiválasztás és írható cellák megkülönböztetése
+    //TODO Csákinak: írható cellák megkülönböztetése
 
     Box(
         modifier = modifier,

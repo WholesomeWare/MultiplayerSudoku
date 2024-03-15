@@ -130,8 +130,6 @@ class LobbyActivity : ComponentActivity() {
                 }
             }
 
-            //TODO: játékos lista, kezdés gomb és nehézség állítás a tulajnak
-
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

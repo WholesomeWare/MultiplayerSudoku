@@ -59,7 +59,7 @@ class Auth {
          * Bejelentkeztet egy felhasználót a Google fiókjával.
          */
         fun signInWithGoogle() {
-            //TODO Csákinak: Google bejelentkezés
+            //TODO Csákinak: Google bejelentkezés miután Vikivel aláírást cseréltetek
             throw NotImplementedError()
         }
 
