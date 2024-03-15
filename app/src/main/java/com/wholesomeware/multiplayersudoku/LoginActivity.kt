@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,7 @@ class LoginActivity : ComponentActivity() {
                 ) {
                     Text(
                         modifier = Modifier.padding(bottom = 92.dp),
-                        text = "Multiplayer Sudoku",
+                        text = stringResource(id = R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                     )
 
@@ -74,7 +75,7 @@ class LoginActivity : ComponentActivity() {
                             .padding(8.dp),
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text(text = stringResource(id = R.string.email)) },
                         isError = errorMessage.isNotBlank(),
                     )
 
@@ -84,7 +85,7 @@ class LoginActivity : ComponentActivity() {
                             .padding(8.dp),
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Password") },
+                        label = { Text(text = stringResource(id = R.string.password)) },
                         visualTransformation = PasswordVisualTransformation(),
                         supportingText = { Text(errorMessage) },
                         isError = errorMessage.isNotBlank(),
@@ -105,12 +106,12 @@ class LoginActivity : ComponentActivity() {
                                         )
                                         finish()
                                     } else {
-                                        errorMessage = "Hiba!"
+                                        errorMessage = getString(R.string.login_error)
                                     }
                                 }
                             },
                         ) {
-                            Text("Regisztráció")
+                            Text(text = stringResource(id = R.string.register))
                         }
 
                         Button(
@@ -128,12 +129,12 @@ class LoginActivity : ComponentActivity() {
                                         )
                                         finish()
                                     } else {
-                                        errorMessage = "Hiba!"
+                                        errorMessage = getString(R.string.login_error)
                                     }
                                 }
                             },
                         ) {
-                            Text("Bejelentkezés")
+                            Text(text = stringResource(id = R.string.login))
                         }
                     }
 
@@ -155,7 +156,7 @@ class LoginActivity : ComponentActivity() {
                         )
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
-                            text = "Google bejelentkezés",
+                            text = stringResource(id = R.string.login_with_google),
                         )
                     }
                 }

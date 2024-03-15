@@ -7,36 +7,36 @@ Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok
 - [ ] Frontend
   - [x] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
   - [x] `LoginActivity.kt`
-  - [ ] `MainActivity.kt`
+  - [x] `MainActivity.kt`
     - [x] Alap kinézet a fő funkcióknak
-    - [ ] Fiók törlés lehetőség (lehetőleg egy dialógus is legyen ott, ne lehessen olyan könnyen véletlen törölni)
-  - [ ] `LobbyActivity.kt` elkészítése (ehez lehet majd rajzolok)
+    - [x] Fiók törlés lehetőség (lehetőleg egy dialógus is legyen ott, ne lehessen olyan könnyen véletlen törölni)
+  - [x] `LobbyActivity.kt` elkészítése (ehez lehet majd rajzolok)
   - [ ] `GameActivity.kt`
   - [ ] Többnyelvűség: összekötés felülettel és magyar string-ek megírása (az app alapértelmezett nyelve angol lesz, szóval a sima `strings.xml`-ben angol szövegek lesznek)
-- [ ] API
+- [x] API
   - [x] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
   - [x] Regisztrálás és bejelentkezés email-jelszó kombóval: `firebase/Auth.kt` függvényeit használva a `LoginActivity.kt`-ben
   - [x] Kijelentkezés lehetőség a menüben: `firebase/Auth.kt`-ből a `signOut()` függvényt használva a `MainActivity.kt`-ben
-  - [ ] Firestore adatbázishoz tartozó kódokban segítség
+  - [x] Firestore adatbázishoz tartozó kódokban segítség
   - Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
 
 ## Csáki
 
-- [ ] Frontend
-  - [ ] Figma: `LobbyActivity.kt`
-  - [ ] Márka implementálása
+- [x] Frontend
+  - [x] Figma: `LobbyActivity.kt`
+  - [x] Márka implementálása
 - [ ] Adatszerkezetek kialakítása
   - [x] Player
   - [ ] Room
-- [ ] Adatbázis létrehozása
+- [x] Adatbázis létrehozása
   - [x] Firestore adatbázis létrehozása Firebase projektben
-  - [ ] Biztonsági szabályok megírása
+  - [x] Biztonsági szabályok megírása
 - [ ] API kódok írása
   - [ ] Auth
     - [x] Email-jelszó kombós regisztrálás, bejelentkezés, kijelentkezés kódja
     - [ ] Google bejelentkezés kódja
-  - [ ] Firestore
-    - [ ] Listener függvények a játék követéséhez
+  - [x] Firestore
+    - [x] Listener függvények a játék követéséhez
 
 ## Bónusz tartalmak csak úgy szórakozásnak
 

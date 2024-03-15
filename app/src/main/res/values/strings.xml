@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">Multiplayer Sudoku</string>
-    <string name="title_activity_game">GameActivity</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="title_activity_lobby">LobbyActivity</string>
+
+    <string name="login_error">Check your login credentials and try again.</string>
+
+    <!-- LoginActivity -->
+    <string name="email">E-mail</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="login">Log in</string>
+    <string name="login_with_google">Log in with Google account</string>
+
+    <!-- MainActivity -->
+
+    <!-- LobbyActivity -->
+
+    <!-- GameActivity -->
 </resources>
