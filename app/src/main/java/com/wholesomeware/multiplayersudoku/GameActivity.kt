@@ -77,7 +77,7 @@ class GameActivity : ComponentActivity() {
                 SudokuDisplay(
                     modifier = Modifier
                         .padding(16.dp),
-                    sudoku = Sudoku.EMPTY,
+                    sudoku = room.sudoku.toSudoku(),
                     onCellClick = { row, column ->
                         Log.d("Sudoku", "Cell clicked: $row, $column")
                     },
