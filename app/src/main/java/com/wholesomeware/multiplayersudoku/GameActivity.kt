@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.ListenerRegistration
+import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
@@ -63,6 +64,11 @@ class GameActivity : ComponentActivity() {
             }
             roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
                 room = it ?: return@addRoomListener
+
+                // Kirúgás észlelése
+                if (!room.players.contains(Auth.getCurrentUser()?.uid)) {
+                    finish()
+                }
             }
         }
     }
