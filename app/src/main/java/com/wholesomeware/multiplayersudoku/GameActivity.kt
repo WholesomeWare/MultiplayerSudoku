@@ -40,7 +40,6 @@ class GameActivity : ComponentActivity() {
 
     override fun onDestroy() {
         roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
-        Firestore.Rooms.leaveRoom(room.id) {}
         super.onDestroy()
     }
 
