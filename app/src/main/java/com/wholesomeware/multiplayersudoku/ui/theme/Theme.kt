@@ -113,8 +113,8 @@ fun MultiplayerSudokuTheme(
         extraSmall = RoundedCornerShape(2.dp),
         small = RoundedCornerShape(2.dp),
         medium = RoundedCornerShape(4.dp),
-        large = RoundedCornerShape(8.dp),
-        extraLarge = RoundedCornerShape(16.dp),
+        large = RoundedCornerShape(6.dp),
+        extraLarge = RoundedCornerShape(12.dp),
     )
 
     MaterialTheme(

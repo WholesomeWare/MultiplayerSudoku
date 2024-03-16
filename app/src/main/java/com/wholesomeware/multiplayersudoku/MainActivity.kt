@@ -5,13 +5,19 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -19,6 +25,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +39,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,11 +53,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
@@ -109,6 +124,22 @@ class MainActivity : ComponentActivity() {
                             onValueChange = {
                                 player = player?.copy(name = it)
                             },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    Firestore.Players.setPlayer(player!!) { isSaved ->
+                                        if (isSaved) {
+                                            isEditNicknameDialogOpen = false
+                                        } else {
+                                            Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
+                                                player = it
+                                            }
+                                        }
+                                    }
+                                }
+                            ),
                         )
                     },
                     onDismissRequest = { isEditNicknameDialogOpen = false },
@@ -141,6 +172,12 @@ class MainActivity : ComponentActivity() {
 
             if (isRemoveAccountDialogOpen) {
                 AlertDialog(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                        )
+                    },
                     title = { Text(text = "Fiók törlése") },
                     text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
                     onDismissRequest = { isRemoveAccountDialogOpen = false },
@@ -275,52 +312,63 @@ class MainActivity : ComponentActivity() {
                         ),
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Column(
-                            modifier = Modifier.padding(8.dp),
+                        Box(
+                            contentAlignment = Alignment.BottomStart,
                         ) {
-                            Text(
-                                text = "Új szoba",
-                                modifier = Modifier.padding(8.dp),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                text = "Barátokat meghívni és nehézséget választani tudsz a váróteremben.",
-                                modifier = Modifier.padding(8.dp),
-                            )
-                            ShapedButton(
-                                onClick = {
-                                    RoomManager.createRoom { id ->
-                                        if (id != null) {
-                                            startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    LobbyActivity::class.java
-                                                ).putExtra(LobbyActivity.EXTRA_ROOM_ID, id)
-                                            )
-                                        } else {
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                "Nem sikerült létrehozni a szobát. Próbáld újra később.",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                },
+                            Image(
                                 modifier = Modifier
-                                    .padding(8.dp)
-                                    .align(Alignment.End),
+                                    .height(160.dp)
+                                    .alpha(.5f),
+                                painter = painterResource(id = R.drawable.undraw_the_world_is_mine),
+                                contentDescription = null,
+                            )
+                            Column(
+                                modifier = Modifier.padding(8.dp),
                             ) {
-                                Icon(
-                                    Icons.Filled.Add,
-                                    contentDescription = null
+                                Text(
+                                    text = "Új szoba",
+                                    modifier = Modifier.padding(8.dp),
+                                    style = MaterialTheme.typography.titleMedium,
                                 )
                                 Text(
-                                    "Létrehozás",
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    text = "Barátokat meghívni és nehézséget választani tudsz a szoba létrehozása után.",
+                                    modifier = Modifier.padding(8.dp),
                                 )
+                                ShapedButton(
+                                    onClick = {
+                                        RoomManager.createRoom { id ->
+                                            if (id != null) {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        LobbyActivity::class.java
+                                                    ).putExtra(LobbyActivity.EXTRA_ROOM_ID, id)
+                                                )
+                                            } else {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    "Nem sikerült létrehozni a szobát. Próbáld újra később.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .align(Alignment.End),
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = null
+                                    )
+                                    Text(
+                                        "Létrehozás",
+                                        modifier = Modifier.padding(start = 8.dp),
+                                    )
+                                }
                             }
-
                         }
+
                     }
                     ElevatedCard(
                         colors = CardDefaults.cardColors(
@@ -328,46 +376,85 @@ class MainActivity : ComponentActivity() {
                         ),
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Column(
-                            modifier = Modifier.padding(8.dp),
+                        Box(
+                            contentAlignment = Alignment.BottomStart,
                         ) {
-                            Text(
-                                text = "Csatlakozás szobához",
+                            Image(
+                                modifier = Modifier
+                                    .height(160.dp)
+                                    .alpha(.5f),
+                                painter = painterResource(id = R.drawable.undraw_real_time_collaboration),
+                                contentDescription = null,
+                            )
+                            Column(
                                 modifier = Modifier.padding(8.dp),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-
-                            TextField(
-                                value = inviteCode,
-                                onValueChange = { inviteCode = it.uppercase() },
-                                placeholder = { Text(text ="Kód") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                            )
-
-                            ShapedButton(
-                                enabled = inviteCode.isNotBlank(),
-                                onClick = {
-                                    startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            LobbyActivity::class.java
-                                        ).putExtra(LobbyActivity.EXTRA_ROOM_ID, inviteCode.trim())
-                                    )
-                                },
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .align(Alignment.End),
                             ) {
-                                Icon(
-                                    Icons.Filled.ConnectWithoutContact,
-                                    contentDescription = "Csatlakozás ikon"
-                                )
                                 Text(
-                                    "Csatlakozás",
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    text = "Csatlakozás szobához",
+                                    modifier = Modifier.padding(8.dp),
+                                    style = MaterialTheme.typography.titleMedium,
                                 )
+
+                                OutlinedTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    value = inviteCode,
+                                    onValueChange = { inviteCode = it.uppercase() },
+                                    label = { Text(text = "Meghívó kód") },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Password,
+                                            contentDescription = "Csatlakozás ikon"
+                                        )
+
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Go,
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onGo = {
+                                            if (inviteCode.isNotBlank()) {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        LobbyActivity::class.java
+                                                    ).putExtra(
+                                                        LobbyActivity.EXTRA_ROOM_ID,
+                                                        inviteCode.trim()
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    ),
+                                )
+
+                                ShapedButton(
+                                    enabled = inviteCode.isNotBlank(),
+                                    onClick = {
+                                        startActivity(
+                                            Intent(
+                                                this@MainActivity,
+                                                LobbyActivity::class.java
+                                            ).putExtra(
+                                                LobbyActivity.EXTRA_ROOM_ID,
+                                                inviteCode.trim()
+                                            )
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .align(Alignment.End),
+                                ) {
+                                    Icon(
+                                        Icons.Filled.ConnectWithoutContact,
+                                        contentDescription = "Csatlakozás ikon"
+                                    )
+                                    Text(
+                                        "Csatlakozás",
+                                        modifier = Modifier.padding(start = 8.dp),
+                                    )
+                                }
                             }
                         }
                     }

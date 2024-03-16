@@ -149,16 +149,26 @@ class Firestore {
             }
 
             fun joinRoom(id: String, onResult: (Boolean) -> Unit) {
+                if (Auth.getCurrentUser()?.uid.isNullOrBlank() || id.isBlank()) {
+                    onResult(false)
+                    return
+                }
+
                 App.instance.firestore.collection("rooms").document(id)
-                    .update("players", FieldValue.arrayUnion(Auth.getCurrentUser()?.uid))
+                    .update("players", FieldValue.arrayUnion(Auth.getCurrentUser()!!.uid))
                     .addOnCompleteListener {
                         onResult(it.isSuccessful)
                     }
             }
 
             fun leaveRoom(id: String, deleteRoomIfEmpty: Boolean = true, onResult: (Boolean) -> Unit) {
+                if (Auth.getCurrentUser()?.uid.isNullOrBlank() || id.isBlank()) {
+                    onResult(false)
+                    return
+                }
+
                 App.instance.firestore.collection("rooms").document(id)
-                    .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()?.uid))
+                    .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()!!.uid))
                     .addOnCompleteListener { leaveTask ->
                         onResult(leaveTask.isSuccessful)
                         if (deleteRoomIfEmpty) {
