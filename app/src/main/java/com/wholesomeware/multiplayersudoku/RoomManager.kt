@@ -37,7 +37,7 @@ class RoomManager {
         private fun generateInviteCode(
             length: Int = 4,
         ): String {
-            val chars = ('A'..'Z') + ('0'..'9') - 'O' - 'I'
+            val chars: List<Char> = ('A'..'Z') + ('0'..'9') - "BIOSZ".toSet()
             return (1..length)
                 .map { chars.random() }
                 .joinToString("")
