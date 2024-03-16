@@ -50,17 +50,19 @@ class GameActivity : ComponentActivity() {
             finish()
             return
         }
-        Firestore.Rooms.getRoomById(roomId) {
-            room = it ?: return@getRoomById
-        }
-        roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
-            room = it ?: return@addRoomListener
-        }
-        Firestore.Rooms.joinRoom(roomId) {
-            if (!it) {
+        Firestore.Rooms.joinRoom(roomId) { isJoinSuccessful ->
+            if (!isJoinSuccessful) {
                 Toast.makeText(this, "Nem sikerült csatlakozni a szobához", Toast.LENGTH_SHORT)
                     .show()
                 finish()
+                return@joinRoom
+            }
+
+            Firestore.Rooms.getRoomById(roomId) {
+                room = it ?: return@getRoomById
+            }
+            roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
+                room = it ?: return@addRoomListener
             }
         }
     }

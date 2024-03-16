@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
@@ -56,7 +61,9 @@ import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
 import com.wholesomeware.multiplayersudoku.ui.components.BlockableExtendedFAB
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
+import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LobbyActivity : ComponentActivity() {
@@ -89,17 +96,19 @@ class LobbyActivity : ComponentActivity() {
             finish()
             return
         }
-        Firestore.Rooms.getRoomById(roomId) {
-            room = it ?: return@getRoomById
-        }
-        roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
-            room = it ?: return@addRoomListener
-        }
-        Firestore.Rooms.joinRoom(roomId) {
-            if (!it) {
+        Firestore.Rooms.joinRoom(roomId) { isJoinSuccessful ->
+            if (!isJoinSuccessful) {
                 Toast.makeText(this, "Nem sikerült csatlakozni a szobához", Toast.LENGTH_SHORT)
                     .show()
                 finish()
+                return@joinRoom
+            }
+
+            Firestore.Rooms.getRoomById(roomId) {
+                room = it ?: return@getRoomById
+            }
+            roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
+                room = it ?: return@addRoomListener
             }
         }
     }
@@ -111,23 +120,64 @@ class LobbyActivity : ComponentActivity() {
         MultiplayerSudokuTheme {
             val coroutineScope = rememberCoroutineScope()
 
+            var isExitDialogOpen by remember { mutableStateOf(false) }
+            var isLoadingGame by remember { mutableStateOf(true) }
+
             val isOwner by remember(room) {
                 mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid)
             }
             var ownerPlayer by remember { mutableStateOf(Player()) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
+
             var selectedDifficulty by remember(room) {
                 mutableStateOf(Sudoku.Difficulty.entries[room.difficultyId])
             }
             var isDifficultySelectorOpen by remember { mutableStateOf(false) }
 
+            BackHandler {
+                isExitDialogOpen = true
+            }
+
             // Ez az effect akkor fut le, amikor a szobában valami megváltozik.
             LaunchedEffect(room) {
+                // Kirúgás észlelése
+                if (!isLoadingGame && !room.players.contains(Auth.getCurrentUser()?.uid)) {
+                    Toast.makeText(this@LobbyActivity, "Kirúgtak a szobából", Toast.LENGTH_SHORT)
+                        .show()
+                    finish()
+                }
+
                 // Lekérjük a játékosokat id alapján, mert a `room` csak az id-jüket tárolja
                 Firestore.Players.getPlayersByIds(room.players) {
                     ownerPlayer = it.firstOrNull { player -> player.id == room.ownerId } ?: Player()
                     players = it
+                    isLoadingGame = false
                 }
+            }
+
+            if (isLoadingGame) {
+                Dialog(
+                    onDismissRequest = {},
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            if (isExitDialogOpen) {
+                AlertDialog(
+                    title = { Text(text = "Biztosan ki szeretnél lépni?") },
+                    onDismissRequest = { isExitDialogOpen = false },
+                    confirmButton = {
+                        ShapedButton(onClick = { finish() }) {
+                            Text(text = "Igen")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { isExitDialogOpen = false }) {
+                            Text(text = "Nem")
+                        }
+                    },
+                )
             }
 
             Surface(
@@ -140,7 +190,7 @@ class LobbyActivity : ComponentActivity() {
                             Text(text = "${ownerPlayer.name} szobája")
                         },
                         navigationIcon = {
-                            IconButton(onClick = { finish() }) {
+                            IconButton(onClick = { isExitDialogOpen = true }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
@@ -169,7 +219,7 @@ class LobbyActivity : ComponentActivity() {
                                 player = player,
                                 adminControlsEnabled = isOwner,
                                 onKickRequest = {
-                                    //TODO: játékos kirúgása
+                                    Firestore.Rooms.kickPlayer(room.id, player.id) {}
                                 }
                             )
                         }
@@ -261,30 +311,41 @@ class LobbyActivity : ComponentActivity() {
                             BlockableExtendedFAB(
                                 enabled = isOwner || room.isStarted,
                                 onClick = {
-                                    coroutineScope.launch {
-                                        val sudoku = SudokuGenerator.create(selectedDifficulty)
-                                        Firestore.Rooms.setRoom(
-                                            room.copy(
-                                                isStarted = true,
-                                                sudoku = SerializableSudoku.fromSudoku(sudoku),
-                                                startTime = System.currentTimeMillis(),
-                                            )
-                                        ) {
+                                    isLoadingGame = true
+                                    coroutineScope.launch(Dispatchers.Default) {
+                                        fun openGameActivity() {
                                             runOnUiThread {
-                                                if (it) {
-                                                    startActivity(
-                                                        Intent(
-                                                            this@LobbyActivity,
-                                                            GameActivity::class.java
-                                                        )
-                                                            .putExtra(EXTRA_ROOM_ID, room.id)
-                                                    )
-                                                } else {
-                                                    Toast.makeText(
+                                                startActivity(
+                                                    Intent(
                                                         this@LobbyActivity,
-                                                        "Nem sikerült elindítani a játékot",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
+                                                        GameActivity::class.java
+                                                    )
+                                                        .putExtra(EXTRA_ROOM_ID, room.id)
+                                                )
+                                                isLoadingGame = false
+                                            }
+                                        }
+
+                                        if (room.isStarted) {
+                                            openGameActivity()
+                                        } else {
+                                            val sudoku = SudokuGenerator.create(selectedDifficulty)
+                                            Firestore.Rooms.setRoom(
+                                                room.copy(
+                                                    isStarted = true,
+                                                    sudoku = SerializableSudoku.fromSudoku(sudoku),
+                                                    startTime = System.currentTimeMillis(),
+                                                )
+                                            ) {
+                                                runOnUiThread {
+                                                    if (it) openGameActivity()
+                                                    else {
+                                                        Toast.makeText(
+                                                            this@LobbyActivity,
+                                                            "Nem sikerült elindítani a játékot",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
                                                 }
                                             }
                                         }

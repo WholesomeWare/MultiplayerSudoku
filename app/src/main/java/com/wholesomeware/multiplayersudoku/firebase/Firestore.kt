@@ -156,16 +156,26 @@ class Firestore {
                     }
             }
 
-            fun leaveRoom(id: String, onResult: (Boolean) -> Unit) {
+            fun leaveRoom(id: String, deleteRoomIfEmpty: Boolean = true, onResult: (Boolean) -> Unit) {
                 App.instance.firestore.collection("rooms").document(id)
                     .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()?.uid))
                     .addOnCompleteListener { leaveTask ->
                         onResult(leaveTask.isSuccessful)
-                        getRoomById(id) { room ->
-                            if (room?.players?.isEmpty() == true) {
-                                deleteRoomById(id) {}
+                        if (deleteRoomIfEmpty) {
+                            getRoomById(id) { room ->
+                                if (room?.players?.isEmpty() == true) {
+                                    deleteRoomById(id) {}
+                                }
                             }
                         }
+                    }
+            }
+
+            fun kickPlayer(roomId: String, playerId: String, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("rooms").document(roomId)
+                    .update("players", FieldValue.arrayRemove(playerId))
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
                     }
             }
 
