@@ -7,7 +7,8 @@ import com.wholesomeware.multiplayersudoku.R
  * helyette a [com.wholesomeware.multiplayersudoku.model.SerializableSudoku] használatos!
  */
 class Sudoku(
-    var grid: Array<IntArray>,
+    val startingGrid: Array<IntArray>,
+    val currentGrid: Array<IntArray> = startingGrid.map { it.clone() }.toTypedArray(),
 ) {
     companion object {
         val EMPTY = Sudoku(Array(9) { IntArray(9) { 0 } })

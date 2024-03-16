@@ -6,20 +6,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
@@ -33,30 +31,45 @@ fun SudokuDisplay(
     modifier: Modifier = Modifier,
     sudoku: Sudoku,
     onCellClick: (Int, Int) -> Unit,
-    selectedCell: Pair<Int, Int>? = null,
+    selectedCells: List<Pair<Int, Int>> = emptyList(),
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    //TODO Csákinak: írható cellák megkülönböztetése
-
+    val sectionBorderThickness = 3.dp
     Box(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Box(modifier = Modifier.height(2.dp).fillMaxWidth().background(cellBorderColor))
-            Box(modifier = Modifier.height(2.dp).fillMaxWidth().background(cellBorderColor))
+            Box(modifier = Modifier
+                .height(sectionBorderThickness)
+                .fillMaxWidth()
+                .background(cellBorderColor))
+            Box(modifier = Modifier
+                .height(sectionBorderThickness)
+                .fillMaxWidth()
+                .background(cellBorderColor))
         }
         Row(
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Box(modifier = Modifier.width(2.dp).fillMaxHeight().background(cellBorderColor))
-            Box(modifier = Modifier.width(2.dp).fillMaxHeight().background(cellBorderColor))
+            Box(modifier = Modifier
+                .width(sectionBorderThickness)
+                .fillMaxHeight()
+                .background(cellBorderColor))
+            Box(modifier = Modifier
+                .width(sectionBorderThickness)
+                .fillMaxHeight()
+                .background(cellBorderColor))
         }
         Column {
-            sudoku.grid.forEachIndexed { rowIndex, row ->
+            sudoku.currentGrid.forEachIndexed { rowIndex, row ->
                 Row {
                     row.forEachIndexed { columnIndex, column ->
                         SudokuCell(
@@ -65,7 +78,8 @@ fun SudokuDisplay(
                                 .aspectRatio(1f),
                             value = column,
                             onClick = { onCellClick(rowIndex, columnIndex) },
-                            isSelected = selectedCell?.first == rowIndex && selectedCell.second == columnIndex,
+                            isWritable = sudoku.startingGrid[rowIndex][columnIndex] == 0,
+                            isSelected = selectedCells.contains(rowIndex to columnIndex),
                             borderColor = cellBorderColor,
                         )
                     }
@@ -84,6 +98,7 @@ fun SudokuCell(
     modifier: Modifier = Modifier,
     value: Int,
     onClick: () -> Unit,
+    isWritable: Boolean,
     isSelected: Boolean = false,
     borderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
@@ -93,12 +108,16 @@ fun SudokuCell(
             .clickable { onClick() }
             .background(
                 if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else if (!isWritable) Color.Gray.copy(alpha = .2f)
                 else Color.Transparent
             ),
         contentAlignment = Alignment.Center,
     ) {
         if (value != 0) {
-            Text(text = value.toString())
+            Text(
+                modifier = Modifier.alpha(if (isWritable) 1f else .8f),
+                text = value.toString(),
+            )
         }
     }
 }

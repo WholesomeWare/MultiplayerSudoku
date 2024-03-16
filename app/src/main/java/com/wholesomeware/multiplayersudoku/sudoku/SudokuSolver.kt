@@ -19,7 +19,7 @@ class SudokuSolver {
         }
 
         fun Sudoku.isSolvable() : Boolean {
-            this@Companion.grid = this.grid.copy()
+            this@Companion.grid = this.startingGrid.copy()
             return solve()
         }
 
