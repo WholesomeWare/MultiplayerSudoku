@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.firebase.Auth
+import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
+import com.wholesomeware.multiplayersudoku.ui.components.ShapedOutlinedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class LoginActivity : ComponentActivity() {
@@ -91,7 +93,7 @@ class LoginActivity : ComponentActivity() {
                         isError = errorMessage.isNotBlank(),
                     )
                     Row {
-                        OutlinedButton(
+                        ShapedOutlinedButton(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(8.dp),
@@ -114,7 +116,7 @@ class LoginActivity : ComponentActivity() {
                             Text(text = stringResource(id = R.string.register))
                         }
 
-                        Button(
+                        ShapedButton(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(8.dp),
@@ -138,7 +140,7 @@ class LoginActivity : ComponentActivity() {
                         }
                     }
 
-                    ElevatedButton(
+                    ShapedButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -149,6 +151,7 @@ class LoginActivity : ComponentActivity() {
                             containerColor = Color.White,
                             contentColor = Color.Black,
                         ),
+                        elevation = ButtonDefaults.elevatedButtonElevation(),
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_google),

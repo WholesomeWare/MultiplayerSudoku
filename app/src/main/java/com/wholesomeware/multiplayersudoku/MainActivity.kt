@@ -52,6 +52,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
+import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
 class MainActivity : ComponentActivity() {
@@ -112,7 +113,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onDismissRequest = { isEditNicknameDialogOpen = false },
                     confirmButton = {
-                        Button(
+                        ShapedButton(
                             onClick = {
                                 Firestore.Players.setPlayer(player!!) { isSaved ->
                                     if (isSaved) {
@@ -144,7 +145,7 @@ class MainActivity : ComponentActivity() {
                     text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
                     onDismissRequest = { isRemoveAccountDialogOpen = false },
                     confirmButton = {
-                        Button(
+                        ShapedButton(
                             onClick = {
                                 val currentUser = Auth.getCurrentUser()
                                 if (currentUser != null) {
@@ -286,7 +287,7 @@ class MainActivity : ComponentActivity() {
                                 text = "Barátokat meghívni és nehézséget választani tudsz a váróteremben.",
                                 modifier = Modifier.padding(8.dp),
                             )
-                            Button(
+                            ShapedButton(
                                 onClick = {
                                     RoomManager.createRoom { id ->
                                         if (id != null) {
@@ -345,7 +346,7 @@ class MainActivity : ComponentActivity() {
                                     .padding(8.dp),
                             )
 
-                            Button(
+                            ShapedButton(
                                 enabled = inviteCode.isNotBlank(),
                                 onClick = {
                                     startActivity(

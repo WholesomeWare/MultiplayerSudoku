@@ -3,7 +3,10 @@ package com.wholesomeware.multiplayersudoku.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -13,6 +16,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -105,9 +109,18 @@ fun MultiplayerSudokuTheme(
         }
     }
 
+    val shapes = Shapes(
+        extraSmall = RoundedCornerShape(2.dp),
+        small = RoundedCornerShape(2.dp),
+        medium = RoundedCornerShape(4.dp),
+        large = RoundedCornerShape(8.dp),
+        extraLarge = RoundedCornerShape(16.dp),
+    )
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = shapes,
         content = content
     )
 }
