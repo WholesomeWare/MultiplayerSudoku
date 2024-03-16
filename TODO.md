@@ -4,39 +4,15 @@
 
 Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
 
-- [ ] Frontend
-  - [x] Nézegesd meg a [Material 3 elemeit itt](https://m3.material.io/components) (minden elemnél meg lehet nézni a hozzá tartozó Jetpack Compose doksit is, ahol példa kódok is vannak)
-  - [x] `LoginActivity.kt`
-  - [x] `MainActivity.kt`
-    - [x] Alap kinézet a fő funkcióknak
-    - [x] Fiók törlés lehetőség (lehetőleg egy dialógus is legyen ott, ne lehessen olyan könnyen véletlen törölni)
-  - [x] `LobbyActivity.kt` elkészítése (ehez lehet majd rajzolok)
-  - [ ] `GameActivity.kt`
-  - [ ] Többnyelvűség: összekötés felülettel és magyar string-ek megírása (az app alapértelmezett nyelve angol lesz, szóval a sima `strings.xml`-ben angol szövegek lesznek)
-- [x] API
-  - [x] Kaptál Firebase hozzáférést. Nézd meg email-jeid és ha megvan, fogadd el
-  - [x] Regisztrálás és bejelentkezés email-jelszó kombóval: `firebase/Auth.kt` függvényeit használva a `LoginActivity.kt`-ben
-  - [x] Kijelentkezés lehetőség a menüben: `firebase/Auth.kt`-ből a `signOut()` függvényt használva a `MainActivity.kt`-ben
-  - [x] Firestore adatbázishoz tartozó kódokban segítség
-  - Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
+- [ ] `GameActivity.kt`
+- [ ] Többnyelvűség: segítság a magyar szövegek megírásában
+- [ ] Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
+- [ ] Önpromó elhelyezése
 
 ## Csáki
 
-- [x] Frontend
-  - [x] Figma: `LobbyActivity.kt`
-  - [x] Márka implementálása
-- [ ] Adatszerkezetek kialakítása
-  - [x] Player
-  - [ ] Room
-- [x] Adatbázis létrehozása
-  - [x] Firestore adatbázis létrehozása Firebase projektben
-  - [x] Biztonsági szabályok megírása
-- [ ] API kódok írása
-  - [ ] Auth
-    - [x] Email-jelszó kombós regisztrálás, bejelentkezés, kijelentkezés kódja
-    - [ ] Google bejelentkezés kódja
-  - [x] Firestore
-    - [x] Listener függvények a játék követéséhez
+- [ ] Google bejelentkezés megírása miután aláírást cseréltetek
+- [ ] Többnyelvűség: Angol szövegek megírása
 
 ## Bónusz tartalmak csak úgy szórakozásnak
 
