@@ -73,6 +73,7 @@ class LobbyActivity : ComponentActivity() {
 
     private var room by mutableStateOf(Room())
     private var roomListenerRegistration: ListenerRegistration? = null
+    private var isLoadingGame by mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +88,17 @@ class LobbyActivity : ComponentActivity() {
         roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
         Firestore.Rooms.leaveRoom(room.id) {}
         super.onDestroy()
+    }
+
+    private fun openGameActivity() {
+        startActivity(
+            Intent(
+                this@LobbyActivity,
+                GameActivity::class.java
+            )
+                .putExtra(EXTRA_ROOM_ID, room.id)
+        )
+        isLoadingGame = false
     }
 
     private fun initializeRoom() {
@@ -106,9 +118,15 @@ class LobbyActivity : ComponentActivity() {
 
             Firestore.Rooms.getRoomById(roomId) {
                 room = it ?: return@getRoomById
+                if (false && room.isStarted) {
+                    openGameActivity()
+                }
             }
             roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
                 room = it ?: return@addRoomListener
+                if (room.isStarted) {
+                    openGameActivity()
+                }
             }
         }
     }
@@ -121,7 +139,6 @@ class LobbyActivity : ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
 
             var isExitDialogOpen by remember { mutableStateOf(false) }
-            var isLoadingGame by remember { mutableStateOf(true) }
 
             val isOwner by remember(room) {
                 mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid)
@@ -309,45 +326,26 @@ class LobbyActivity : ComponentActivity() {
                         },
                         floatingActionButton = {
                             BlockableExtendedFAB(
-                                enabled = isOwner || room.isStarted,
+                                enabled = isOwner,
                                 onClick = {
                                     isLoadingGame = true
                                     coroutineScope.launch(Dispatchers.Default) {
-                                        fun openGameActivity() {
-                                            runOnUiThread {
-                                                startActivity(
-                                                    Intent(
-                                                        this@LobbyActivity,
-                                                        GameActivity::class.java
-                                                    )
-                                                        .putExtra(EXTRA_ROOM_ID, room.id)
-                                                )
-                                                isLoadingGame = false
-                                            }
-                                        }
-
-                                        if (room.isStarted) {
-                                            openGameActivity()
-                                        } else {
-
-
-                                            val sudoku = SudokuGenerator.create(selectedDifficulty)
-                                            Firestore.Rooms.setRoom(
-                                                room.copy(
-                                                    isStarted = true,
-                                                    sudoku = SerializableSudoku.fromSudoku(sudoku),
-                                                    startTime = System.currentTimeMillis(),
-                                                )
-                                            ) {
+                                        val sudoku = SudokuGenerator.create(selectedDifficulty)
+                                        Firestore.Rooms.setRoom(
+                                            room.copy(
+                                                isStarted = true,
+                                                sudoku = SerializableSudoku.fromSudoku(sudoku),
+                                                startTime = System.currentTimeMillis(),
+                                            )
+                                        ) {
+                                            if (!it) {
                                                 runOnUiThread {
-                                                    if (it) openGameActivity()
-                                                    else {
-                                                        Toast.makeText(
-                                                            this@LobbyActivity,
-                                                            "Nem sikerült elindítani a játékot",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
+                                                    Toast.makeText(
+                                                        this@LobbyActivity,
+                                                        "Nem sikerült elindítani a játékot",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    isLoadingGame = false
                                                 }
                                             }
                                         }

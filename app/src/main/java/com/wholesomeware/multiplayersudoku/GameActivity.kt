@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,6 +38,7 @@ import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
+import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
@@ -89,8 +93,14 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
+            var isExitDialogOpen by remember { mutableStateOf(false) }
+
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+
+            BackHandler {
+                isExitDialogOpen = true
+            }
 
             LaunchedEffect(sudoku) {
                 if (room.id.isBlank()) {
@@ -98,6 +108,23 @@ class GameActivity : ComponentActivity() {
                 }
                 room = room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))
                 Firestore.Rooms.setRoom(room) {}
+            }
+
+            if (isExitDialogOpen) {
+                AlertDialog(
+                    title = { Text(text = "Biztosan ki szeretnél lépni?") },
+                    onDismissRequest = { isExitDialogOpen = false },
+                    confirmButton = {
+                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(room.id) {} }) {
+                            Text(text = "Igen")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { isExitDialogOpen = false }) {
+                            Text(text = "Nem")
+                        }
+                    },
+                )
             }
 
             Surface(
