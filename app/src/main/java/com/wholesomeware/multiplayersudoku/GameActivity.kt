@@ -5,8 +5,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
@@ -81,15 +90,130 @@ class GameActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                SudokuDisplay(
-                    modifier = Modifier
-                        .padding(16.dp),
-                    sudoku = room.sudoku.toSudoku(),
-                    onCellClick = { row, column ->
-                        Log.d("Sudoku", "Cell clicked: $row, $column")
-                    },
-                    cellBorderColor = MaterialTheme.colorScheme.primary,
-                )
+                Column{
+                    SudokuDisplay(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        sudoku = room.sudoku.toSudoku(),
+                        onCellClick = { row, column ->
+                            Log.d("Sudoku", "Cell clicked: $row, $column")
+                        },
+                        cellBorderColor = MaterialTheme.colorScheme.primary,
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "1",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "2",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "3",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "4",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "5",
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "6",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "7",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "8",
+                                fontSize = 20.sp
+                            )
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {  },
+                            modifier = Modifier.weight(1f)
+                                .height(150.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(
+                                text = "9",
+                                fontSize = 20.sp
+                            )
+                        }
+
+                    }
+                }
+
             }
         }
     }

@@ -329,6 +329,8 @@ class LobbyActivity : ComponentActivity() {
                                         if (room.isStarted) {
                                             openGameActivity()
                                         } else {
+
+
                                             val sudoku = SudokuGenerator.create(selectedDifficulty)
                                             Firestore.Rooms.setRoom(
                                                 room.copy(
