@@ -118,12 +118,17 @@ class LobbyActivity : ComponentActivity() {
 
             Firestore.Rooms.getRoomById(roomId) {
                 room = it ?: return@getRoomById
-                if (false && room.isStarted) {
-                    openGameActivity()
-                }
             }
-            roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) {
-                room = it ?: return@addRoomListener
+            roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) { newRoom ->
+                // Kirúgás észlelése
+                if (newRoom?.players?.contains(Auth.getCurrentUser()?.uid) == false) {
+                    roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
+                    finish()
+                    return@addRoomListener
+                }
+
+                room = newRoom ?: return@addRoomListener
+
                 if (room.isStarted) {
                     openGameActivity()
                 }
