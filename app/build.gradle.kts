@@ -55,6 +55,9 @@ dependencies {
     implementation("com.github.CsakiTheOne:WholesomeWare:1.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.core.ktx)
@@ -68,6 +71,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.googleid)
+    implementation(libs.play.services.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
