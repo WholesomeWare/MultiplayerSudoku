@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.firebase.Auth
+import com.wholesomeware.multiplayersudoku.ui.components.FullscreenLoadingIndicator
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedOutlinedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
@@ -53,6 +54,9 @@ class LoginActivity : ComponentActivity() {
             var email by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
             var errorMessage by remember { mutableStateOf("") }
+            var isLoading by remember { mutableStateOf(false) }
+
+            FullscreenLoadingIndicator(isLoading = isLoading)
 
             Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -98,7 +102,9 @@ class LoginActivity : ComponentActivity() {
                                 .weight(1f)
                                 .padding(8.dp),
                             onClick = {
+                                isLoading = true
                                 Auth.registerWithEmailAndPassword(email, password) {
+                                    isLoading = false
                                     if (it) {
                                         startActivity(
                                             Intent(
@@ -121,7 +127,9 @@ class LoginActivity : ComponentActivity() {
                                 .weight(1f)
                                 .padding(8.dp),
                             onClick = {
+                                isLoading = true
                                 Auth.signInWithEmailAndPassword(email, password) {
+                                    isLoading = false
                                     if (it) {
                                         startActivity(
                                             Intent(

@@ -241,7 +241,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "9")
                         }
                         LargeFloatingActionButton(
-                            onClick = {},
+                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 0) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(110.dp)

@@ -60,6 +60,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
+import com.wholesomeware.multiplayersudoku.ui.components.FullscreenLoadingIndicator
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 
@@ -86,13 +87,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainScreen() {
         MultiplayerSudokuTheme {
-            //TODO: Szépítgetés, statisztikák
-
             var player by remember { mutableStateOf<Player?>(null) }
+            var isLoading by remember { mutableStateOf(false) }
 
             var isMenuOpen by remember { mutableStateOf(false) }
             var isEditNicknameDialogOpen by remember { mutableStateOf(false) }
             var isRemoveAccountDialogOpen by remember { mutableStateOf(false) }
+
             var inviteCode by rememberSaveable { mutableStateOf("") }
 
             LaunchedEffect(isEditNicknameDialogOpen) {
@@ -106,6 +107,8 @@ class MainActivity : ComponentActivity() {
                         } else null
                 }
             }
+
+            FullscreenLoadingIndicator(isLoading = isLoading)
 
             if (isEditNicknameDialogOpen) {
                 AlertDialog(
@@ -122,12 +125,15 @@ class MainActivity : ComponentActivity() {
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
+                                    isLoading = true
                                     Firestore.Players.setPlayer(player!!) { isSaved ->
                                         if (isSaved) {
                                             isEditNicknameDialogOpen = false
+                                            isLoading = false
                                         } else {
                                             Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
                                                 player = it
+                                                isLoading = false
                                             }
                                         }
                                     }
@@ -139,12 +145,15 @@ class MainActivity : ComponentActivity() {
                     confirmButton = {
                         ShapedButton(
                             onClick = {
+                                isLoading = true
                                 Firestore.Players.setPlayer(player!!) { isSaved ->
                                     if (isSaved) {
                                         isEditNicknameDialogOpen = false
+                                        isLoading = false
                                     } else {
                                         Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
                                             player = it
+                                            isLoading = false
                                         }
                                     }
                                 }
@@ -177,9 +186,11 @@ class MainActivity : ComponentActivity() {
                     confirmButton = {
                         ShapedButton(
                             onClick = {
+                                isLoading = true
                                 val currentUser = Auth.getCurrentUser()
                                 if (currentUser != null) {
                                     Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
+                                        isLoading = false
                                         if (isSuccess) {
                                             Auth.deleteCurrentUser {
                                                 if (it) {
@@ -329,7 +340,9 @@ class MainActivity : ComponentActivity() {
                                 )
                                 ShapedButton(
                                     onClick = {
+                                        isLoading = true
                                         RoomManager.createRoom { id ->
+                                            isLoading = false
                                             if (id != null) {
                                                 startActivity(
                                                     Intent(

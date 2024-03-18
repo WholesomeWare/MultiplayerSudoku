@@ -43,15 +43,15 @@ class Sudoku(
     ) {
         EASY(
             R.string.difficulty_easy,
-            40,
+            45,
         ),
         MEDIUM(
             R.string.difficulty_medium,
-            25,
+            35,
         ),
         HARD(
             R.string.difficulty_hard,
-            15,
+            25,
         ),
     }
 }
