@@ -168,17 +168,10 @@ class LobbyActivity : ComponentActivity() {
             var selectedDifficulty by remember(room) {
                 mutableStateOf(Sudoku.Difficulty.entries[room.difficultyId])
             }
-            //TODO: igen
             var isDifficultySelectorOpen by remember { mutableStateOf(false) }
 
             BackHandler {
                 isExitDialogOpen = true
-            }
-
-            LaunchedEffect(isDifficultySelectorOpen) {
-                if (!isOwner) {
-                    isDifficultySelectorOpen = false
-                }
             }
 
             // Ez az effect akkor fut le, amikor a szobában valami megváltozik.
@@ -326,7 +319,7 @@ class LobbyActivity : ComponentActivity() {
                                     },
                                 )
                                 ExposedDropdownMenu(
-                                    expanded = isDifficultySelectorOpen,
+                                    expanded = isDifficultySelectorOpen && isOwner,
                                     onDismissRequest = { isDifficultySelectorOpen = false },
                                 ) {
                                     Sudoku.Difficulty.entries.forEach { difficulty ->

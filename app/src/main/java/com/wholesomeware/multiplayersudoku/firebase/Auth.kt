@@ -1,7 +1,10 @@
 package com.wholesomeware.multiplayersudoku.firebase
 
+import android.app.Activity
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.wholesomeware.multiplayersudoku.R
 
 class Auth {
     companion object {
@@ -58,8 +61,11 @@ class Auth {
         /**
          * Bejelentkeztet egy felhasználót a Google fiókjával.
          */
-        fun signInWithGoogle() {
-            //TODO Csákinak: Google bejelentkezés miután Vikivel aláírást cseréltetek
+        fun signInWithGoogle(activity: Activity) {
+            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(true)
+                .setServerClientId(activity.getString(R.string.server_client_id))
+                .build()
             throw NotImplementedError()
         }
 
