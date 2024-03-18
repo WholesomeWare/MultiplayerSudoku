@@ -31,6 +31,8 @@
     <string name="join_room">Join room</string>
     <string name="invite_code">Invite code</string>
     <string name="join">Join</string>
+    <string name="made">Made by WholesomeWare and Viki</string>
+
 
 
     <!-- LobbyActivity -->

@@ -1,14 +1,17 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -465,7 +468,33 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.made),
+                    )
+                    Row {
+                        Icon(
+                            painter = painterResource(id = com.csakitheone.wholesomeware_brand.R.drawable.ic_wholesomeware),
+                            contentDescription = null,
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.instagram),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable {
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://www.instagram.com/viktoriakerecsenyi/")
+                                    )
+                                    startActivity(intent)
+                                }
+                        )
+                    }
+                }
             }
         }
     }

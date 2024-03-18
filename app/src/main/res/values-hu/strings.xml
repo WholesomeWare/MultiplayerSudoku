@@ -32,6 +32,7 @@
     <string name="join_room">Csatlakozás szobához</string>
     <string name="invite_code">Meghívó kód</string>
     <string name="join">Csatlakozás</string>
+    <string name="made">Készítette WholesomeWare és Viki</string>
 
     <!-- LobbyActivity -->
      <string name="room_not_found">Nem található a szoba</string>
