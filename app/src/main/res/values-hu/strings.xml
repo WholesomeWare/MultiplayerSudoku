@@ -44,6 +44,7 @@
     <string name="difficulty">Nehézség</string>
     <string name="game_error">Nem sikerült elindítani a játékot</string>
     <string name="start">Indítás</string>
+    <string name="room_title">%s szobája</string>
 
     <!-- GameActivity -->
 </resources>

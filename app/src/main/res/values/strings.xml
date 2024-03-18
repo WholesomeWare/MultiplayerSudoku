@@ -44,6 +44,7 @@
     <string name="difficulty">Difficulty</string>
     <string name="game_error"></string>
     <string name="start">Start</string>
+    <string name="room_title">%s\'s room</string>
 
 
     <!-- GameActivity -->

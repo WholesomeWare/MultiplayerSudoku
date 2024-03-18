@@ -218,7 +218,10 @@ class LobbyActivity : ComponentActivity() {
                 Column {
                     CenterAlignedTopAppBar(
                         title = {
-                            Text(text = "${ownerPlayer.name} szobája")
+                            Text(text = stringResource(
+                                id = R.string.room_title,
+                                ownerPlayer.name)
+                            )
                         },
                         navigationIcon = {
                             IconButton(onClick = { isExitDialogOpen = true }) {
