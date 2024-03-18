@@ -4,14 +4,14 @@
 
 Android Studio-ban van egy `TODO` panel, amiben láthatod, hogy milyen feladatok vannak a projektben és hol. Ezt fölső menüben a `View` -> `Tool Windows` -> `TODO` menüponttal tudod megnyitni. Vannak feladatok, amiket magamnak írtam föl, de van, ami neked szól. Azért ide is próbálom felírni a dolgokat.
 
-- [ ] `GameActivity.kt`
+- [x] `GameActivity.kt`
 - [ ] Többnyelvűség: segítság a magyar szövegek megírásában
-- [ ] Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
+- [x] Google bejelentkezés: ennek még nem írtam meg a kódját, de te fogod ezt is összekötni a hozzá tartozó gombbal a `LoginActivity.kt`-ben
 - [ ] Önpromó elhelyezése
 
 ## Csáki
 
-- [ ] Google bejelentkezés megírása miután aláírást cseréltetek
+- [x] Google bejelentkezés megírása miután aláírást cseréltetek
 - [ ] Többnyelvűség: Angol szövegek megírása
 
 ## Bónusz tartalmak csak úgy szórakozásnak
