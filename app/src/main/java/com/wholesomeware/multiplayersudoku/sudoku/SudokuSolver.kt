@@ -13,20 +13,39 @@ class SudokuSolver {
 
         private var grid = Array(GRID_SIZE) { IntArray(GRID_SIZE) }
 
-        fun isGridSolvable(grid: Array<IntArray>) : Boolean {
+        fun isGridSolvable(grid: Array<IntArray>): Boolean {
             this.grid = grid.copy()
             return solve()
         }
 
-        fun Sudoku.isSolvable() : Boolean {
+        fun isGridCorrect(grid: Array<IntArray>): Boolean {
+            val rows: List<List<Int>> = grid.map { row -> row.filter { it != 0 } }
+            if (rows.any { it.size != it.toSet().size }) {
+                return false
+            }
+            val columns: List<List<Int>> =
+                (0 until GRID_SIZE).map { column -> grid.map { it[column] }.filter { it != 0 } }
+            if (columns.any { it.size != it.toSet().size }) {
+                return false
+            }
+            val boxes: List<List<Int>> = (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).flatMap { rowStart ->
+                (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).map { columnStart ->
+                    (rowStart until rowStart + GRID_SIZE_SQUARE_ROOT).flatMap { row ->
+                        (columnStart until columnStart + GRID_SIZE_SQUARE_ROOT).map { column -> grid[row][column] }
+                    }.filter { it != 0 }
+                }
+            }
+            return !boxes.any { it.size != it.toSet().size }
+        }
+
+        fun Sudoku.isSolvable(): Boolean {
             this@Companion.grid = this.currentGrid.copy()
             return solve()
         }
 
         private fun Array<IntArray>.copy() = Array(size) { get(it).clone() }
 
-        //TODO Csákinak: brainfuck
-        private fun solve() : Boolean {
+        private fun solve(): Boolean {
             for (i in 0 until GRID_SIZE) {
                 for (j in 0 until GRID_SIZE) {
                     if (grid[i][j] == 0) {
@@ -45,7 +64,7 @@ class SudokuSolver {
             return true
         }
 
-        private fun getAvailableDigits(row: Int, column: Int) : Iterable<Int> {
+        private fun getAvailableDigits(row: Int, column: Int): Iterable<Int> {
             val digitsRange = MIN_DIGIT_VALUE..MAX_DIGIT_VALUE
             var availableDigits = mutableSetOf<Int>()
             availableDigits.addAll(digitsRange)
@@ -69,7 +88,10 @@ class SudokuSolver {
             }
         }
 
-        private fun truncateByDigitsAlreadyUsedInColumn(availableDigits: MutableSet<Int>, column: Int) {
+        private fun truncateByDigitsAlreadyUsedInColumn(
+            availableDigits: MutableSet<Int>,
+            column: Int
+        ) {
             for (i in MIN_DIGIT_INDEX..MAX_DIGIT_INDEX) {
                 if (grid[i][column] != 0) {
                     availableDigits.remove(grid[i][column])
@@ -77,7 +99,11 @@ class SudokuSolver {
             }
         }
 
-        private fun truncateByDigitsAlreadyUsedInBox(availableDigits: MutableSet<Int>, row: Int, column: Int) {
+        private fun truncateByDigitsAlreadyUsedInBox(
+            availableDigits: MutableSet<Int>,
+            row: Int,
+            column: Int
+        ) {
             val rowStart = findBoxStart(row)
             val rowEnd = findBoxEnd(rowStart)
             val columnStart = findBoxStart(column)

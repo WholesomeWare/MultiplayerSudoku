@@ -1,7 +1,6 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -10,12 +9,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -39,17 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
-import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
-import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
-import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isSolvable
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
@@ -136,7 +129,7 @@ class GameActivity : ComponentActivity() {
 
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
-            var isSolvable by remember { mutableStateOf(true) }
+            var isCorrect by remember { mutableStateOf(true) }
 
             BackHandler {
                 isExitDialogOpen = true
@@ -157,7 +150,7 @@ class GameActivity : ComponentActivity() {
                 room = room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))
                 Firestore.Rooms.setRoom(room) {}
 
-                isSolvable = sudoku.isSolvable()
+                isCorrect = SudokuSolver.isGridCorrect(sudoku.currentGrid)
             }
 
             if (isExitDialogOpen) {
@@ -222,7 +215,7 @@ class GameActivity : ComponentActivity() {
                             }
                         },
                         selectedCells = listOfNotNull(selectedCell),
-                        cellBorderColor = if (isSolvable) MaterialTheme.colorScheme.primary
+                        cellBorderColor = if (isCorrect) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.error,
                     )
 
