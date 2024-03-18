@@ -14,8 +14,36 @@
     <string name="login_error">Check your login credentials and try again.</string>
 
     <!-- MainActivity -->
+    <string name="edit_nickname">Edit nickname</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_account">Delete account</string>
+    <string name="sure_delete_account"></string>
+    <string name="delete">Delete</string>
+    <string name="logout">Logout</string>
+    <string name="new_room">New room</string>
+    <string name="new_room_description"></string>
+    <string name="new_room_error">Failed to create room. Try again later.</string>
+    <string name="create">Create</string>
+    <string name="join_room">Join room</string>
+    <string name="invite_code">Invite code</string>
+    <string name="join">Join</string>
+
 
     <!-- LobbyActivity -->
+    <string name="room_not_found"></string>
+    <string name="join_failed"></string>
+    <string name="kicked_out"></string>
+    <string name="sure_logout"></string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="room_description"></string>
+    <string name="share">Share</string>
+    <string name="invite_player"></string>
+    <string name="difficulty">Difficulty</string>
+    <string name="game_error"></string>
+    <string name="start">Start</string>
+
 
     <!-- GameActivity -->
 </resources>

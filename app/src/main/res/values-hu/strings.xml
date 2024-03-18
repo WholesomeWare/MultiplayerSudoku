@@ -15,8 +15,34 @@
     <string name="login_error">Ellenőrizd a bejelentkezési adatokat, és próbáld újra.</string>
 
     <!-- MainActivity -->
+    <string name="edit_nickname">Becenév szerkesztése</string>
+    <string name="save">Mentés</string>
+    <string name="cancel">Mégse</string>
+    <string name="delete_account">Fiók törlése</string>
+    <string name="sure_delete_account">Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.</string>
+    <string name="delete">Törlés</string>
+    <string name="logout">Kijelentkezés</string>
+    <string name="new_room">Új szoba</string>
+    <string name="new_room_description">Barátokat meghívni és nehézséget választani tudsz a szoba létrehozása után.</string>
+    <string name="new_room_error">Nem sikerült létrehozni a szobát. Próbáld újra később.</string>
+    <string name="create">Létrehozás</string>
+    <string name="join_room">Csatlakozás szobához</string>
+    <string name="invite_code">Meghívó kód</string>
+    <string name="join">Csatlakozás</string>
 
     <!-- LobbyActivity -->
+     <string name="room_not_found">Nem található a szoba</string>
+    <string name="join_failed">Nem sikerült csatlakozni a szobához</string>
+    <string name="kicked_out">Kirúgtak a szobából</string>
+    <string name="sure_logout">Biztosan ki szeretnél lépni?</string>
+    <string name="yes">Igen</string>
+    <string name="no">Nem</string>
+    <string name="room_description">Hívd meg a barátaidat, és játszatok együtt!</string>
+    <string name="share">Megosztás</string>
+    <string name="invite_player">Játékos meghívása</string>
+    <string name="difficulty">Nehézség</string>
+    <string name="game_error">Nem sikerült elindítani a játékot</string>
+    <string name="start">Indítás</string>
 
     <!-- GameActivity -->
 </resources>

@@ -118,13 +118,13 @@ class LobbyActivity : ComponentActivity() {
     private fun initializeRoom() {
         val roomId = intent.getStringExtra(EXTRA_ROOM_ID)
         if (roomId == null) {
-            Toast.makeText(this, "Nem található a szoba", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.room_not_found), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
         Firestore.Rooms.joinRoom(roomId) { isJoinSuccessful ->
             if (!isJoinSuccessful) {
-                Toast.makeText(this, "Nem sikerült csatlakozni a szobához", Toast.LENGTH_SHORT)
+                Toast.makeText(this, getString(R.string.join_failed), Toast.LENGTH_SHORT)
                     .show()
                 finish()
                 return@joinRoom
@@ -185,7 +185,7 @@ class LobbyActivity : ComponentActivity() {
             LaunchedEffect(room) {
                 // Kirúgás észlelése
                 if (!isLoading && !room.players.contains(Auth.getCurrentUser()?.uid)) {
-                    Toast.makeText(this@LobbyActivity, "Kirúgtak a szobából", Toast.LENGTH_SHORT)
+                    Toast.makeText(this@LobbyActivity, getString(R.string.kicked_out), Toast.LENGTH_SHORT)
                         .show()
                     finish()
                 }
@@ -202,16 +202,16 @@ class LobbyActivity : ComponentActivity() {
 
             if (isExitDialogOpen) {
                 AlertDialog(
-                    title = { Text(text = "Biztosan ki szeretnél lépni?") },
+                    title = { Text(text = stringResource(id = R.string.sure_logout)) },
                     onDismissRequest = { isExitDialogOpen = false },
                     confirmButton = {
                         ShapedButton(onClick = { finish() }) {
-                            Text(text = "Igen")
+                            Text(text = stringResource(id = R.string.yes))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { isExitDialogOpen = false }) {
-                            Text(text = "Nem")
+                            Text(text = stringResource(id = R.string.no))
                         }
                     },
                 )
@@ -247,7 +247,7 @@ class LobbyActivity : ComponentActivity() {
                                 .padding(8.dp),
                         ) {
                             Text(
-                                text = "Hívd meg a barátaidat, és játszatok együtt!",
+                                text = stringResource(id = R.string.room_description),
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
@@ -272,7 +272,7 @@ class LobbyActivity : ComponentActivity() {
                                                     room.id,
                                                 )
                                             },
-                                            "Megosztás"
+                                            getString(R.string.share)
                                         )
                                     )
                                 }
@@ -291,7 +291,7 @@ class LobbyActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .padding(8.dp)
                                         .weight(1f),
-                                    text = "Játékos meghívása",
+                                    text = stringResource(id = R.string.invite_player),
                                     color = MaterialTheme.colorScheme.primary,
                                 )
                             }
@@ -312,7 +312,7 @@ class LobbyActivity : ComponentActivity() {
                                         .width(200.dp)
                                         .padding(horizontal = 8.dp),
                                     enabled = isOwner,
-                                    label = { Text(text = "Nehézség") },
+                                    label = { Text(text = stringResource(id = R.string.difficulty)) },
                                     value = stringResource(id = selectedDifficulty.stringResourceId),
                                     onValueChange = {},
                                     maxLines = 1,
@@ -364,7 +364,7 @@ class LobbyActivity : ComponentActivity() {
                                                 runOnUiThread {
                                                     Toast.makeText(
                                                         this@LobbyActivity,
-                                                        "Nem sikerült elindítani a játékot",
+                                                        getString(R.string.game_error),
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                     isLoading = false
@@ -379,7 +379,7 @@ class LobbyActivity : ComponentActivity() {
                                         contentDescription = null,
                                     )
                                 },
-                                text = { Text(text = "Indítás") },
+                                text = { Text(text = stringResource(id = R.string.start)) },
                             )
                         }
                     )

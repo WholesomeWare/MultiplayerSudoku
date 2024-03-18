@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -112,7 +113,7 @@ class MainActivity : ComponentActivity() {
 
             if (isEditNicknameDialogOpen) {
                 AlertDialog(
-                    title = { Text(text = "Becenév szerkesztése") },
+                    title = { Text(text = stringResource(id = R.string.edit_nickname)) },
                     text = {
                         TextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -159,14 +160,14 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         ) {
-                            Text(text = "Mentés")
+                            Text(text = stringResource(id = R.string.save))
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { isEditNicknameDialogOpen = false },
                         ) {
-                            Text(text = "Mégse")
+                            Text(text = stringResource(id = R.string.cancel))
                         }
                     }
                 )
@@ -180,8 +181,8 @@ class MainActivity : ComponentActivity() {
                             contentDescription = null,
                         )
                     },
-                    title = { Text(text = "Fiók törlése") },
-                    text = { Text(text = "Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.") },
+                    title = { Text(text = stringResource(id = R.string.delete_account)) },
+                    text = { Text(text = stringResource(id = R.string.sure_delete_account)) },
                     onDismissRequest = { isRemoveAccountDialogOpen = false },
                     confirmButton = {
                         ShapedButton(
@@ -212,14 +213,14 @@ class MainActivity : ComponentActivity() {
                                 contentColor = MaterialTheme.colorScheme.onError,
                             )
                         ) {
-                            Text(text = "Törlés")
+                            Text(text = stringResource(id = R.string.delete))
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { isRemoveAccountDialogOpen = false },
                         ) {
-                            Text(text = "Mégse")
+                            Text(text = stringResource(id = R.string.cancel))
                         }
                     }
                 )
@@ -232,7 +233,7 @@ class MainActivity : ComponentActivity() {
                 Column {
                     CenterAlignedTopAppBar(
                         title = {
-                            Text(text = "Multiplayer Sudoku")
+                            Text(text = stringResource(id = R.string.app_name))
                         },
                         navigationIcon = {
                             //TODO: app ikon ide
@@ -261,7 +262,7 @@ class MainActivity : ComponentActivity() {
                                                 contentDescription = null,
                                             )
                                         },
-                                        text = { Text(text = "Becenév szerkesztése") },
+                                        text = { Text(text = stringResource(id = R.string.edit_nickname)) },
                                         onClick = {
                                             isEditNicknameDialogOpen = true
                                             isMenuOpen = false
@@ -275,7 +276,7 @@ class MainActivity : ComponentActivity() {
                                             )
 
                                         },
-                                        text = { Text(text = "Kijelentkezés") },
+                                        text = { Text(text = stringResource(id = R.string.logout)) },
                                         onClick = {
                                             Auth.signOut()
                                             startActivity(
@@ -294,7 +295,7 @@ class MainActivity : ComponentActivity() {
                                                 contentDescription = null,
                                             )
                                         },
-                                        text = { Text(text = "Fiók törlése") },
+                                        text = { Text(text = stringResource(id = R.string.delete_account)) },
                                         onClick = {
                                             isRemoveAccountDialogOpen = true
                                             isMenuOpen = false
@@ -330,12 +331,12 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(8.dp),
                             ) {
                                 Text(
-                                    text = "Új szoba",
+                                    text = stringResource(id = R.string.new_room),
                                     modifier = Modifier.padding(8.dp),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 Text(
-                                    text = "Barátokat meghívni és nehézséget választani tudsz a szoba létrehozása után.",
+                                    text = stringResource(id = R.string.new_room_description),
                                     modifier = Modifier.padding(8.dp),
                                 )
                                 ShapedButton(
@@ -353,7 +354,7 @@ class MainActivity : ComponentActivity() {
                                             } else {
                                                 Toast.makeText(
                                                     this@MainActivity,
-                                                    "Nem sikerült létrehozni a szobát. Próbáld újra később.",
+                                                    getString(R.string.new_room_error),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }
@@ -368,7 +369,7 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = null
                                     )
                                     Text(
-                                        "Létrehozás",
+                                        getString(R.string.create),
                                         modifier = Modifier.padding(start = 8.dp),
                                     )
                                 }
@@ -396,7 +397,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(8.dp),
                             ) {
                                 Text(
-                                    text = "Csatlakozás szobához",
+                                    text = stringResource(id = R.string.join_room),
                                     modifier = Modifier.padding(8.dp),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
@@ -407,11 +408,11 @@ class MainActivity : ComponentActivity() {
                                         .padding(8.dp),
                                     value = inviteCode,
                                     onValueChange = { inviteCode = it.uppercase() },
-                                    label = { Text(text = "Meghívó kód") },
+                                    label = { Text(text = stringResource(id = R.string.invite_code)) },
                                     leadingIcon = {
                                         Icon(
                                             imageVector = Icons.Default.Password,
-                                            contentDescription = "Csatlakozás ikon"
+                                            contentDescription = null
                                         )
 
                                     },
@@ -454,10 +455,10 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Icon(
                                         Icons.Filled.ConnectWithoutContact,
-                                        contentDescription = "Csatlakozás ikon"
+                                        contentDescription = null
                                     )
                                     Text(
-                                        "Csatlakozás",
+                                        getString(R.string.join),
                                         modifier = Modifier.padding(start = 8.dp),
                                     )
                                 }
