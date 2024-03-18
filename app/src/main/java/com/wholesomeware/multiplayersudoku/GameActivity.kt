@@ -157,61 +157,46 @@ class GameActivity : ComponentActivity() {
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 1) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "1",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "1")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 2) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "2",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "2")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 3) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "3",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "3")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 4) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "4",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "4")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 5) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "5",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "5")
                         }
                     }
 
@@ -223,49 +208,46 @@ class GameActivity : ComponentActivity() {
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 6) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "6",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "6")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 7) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "7",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "7")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 8) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "8",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "8")
                         }
                         LargeFloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 9) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(150.dp)
+                                .height(110.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "9",
-                                fontSize = 20.sp
-                            )
+                            Text(text = "9")
+                        }
+                        LargeFloatingActionButton(
+                            onClick = {},
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(110.dp)
+                                .padding(6.dp)
+                        ) {
+                            Text(text = "Töröl")
                         }
 
                     }
