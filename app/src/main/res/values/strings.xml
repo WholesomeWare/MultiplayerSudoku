@@ -5,6 +5,9 @@
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>
 
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <!-- LoginActivity -->
     <string name="email">E-mail</string>
     <string name="password">Password</string>
@@ -18,11 +21,11 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete_account">Delete account</string>
-    <string name="sure_delete_account"></string>
+    <string name="sure_delete_account">Are you sure you want to delete your account? This action is irreversible.</string>
     <string name="delete">Delete</string>
     <string name="logout">Logout</string>
     <string name="new_room">New room</string>
-    <string name="new_room_description"></string>
+    <string name="new_room_description">You can select difficulty and invite friends after the room creation.</string>
     <string name="new_room_error">Failed to create room. Try again later.</string>
     <string name="create">Create</string>
     <string name="join_room">Join room</string>
@@ -35,11 +38,9 @@
     <string name="join_failed"></string>
     <string name="kicked_out"></string>
     <string name="sure_logout"></string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
     <string name="room_description"></string>
     <string name="share">Share</string>
-    <string name="invite_player"></string>
+    <string name="invite_player">Invite player</string>
     <string name="difficulty">Difficulty</string>
     <string name="game_error"></string>
     <string name="start">Start</string>

@@ -77,7 +77,7 @@ class GameActivity : ComponentActivity() {
                 if (room.startTime > 0) {
                     currentTimeMillis = System.currentTimeMillis() - room.startTime
                 }
-            }, 10000L, 1000L)
+            }, 1000L, 1000L)
         }
     }
 

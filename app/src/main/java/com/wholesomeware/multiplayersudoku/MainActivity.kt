@@ -99,13 +99,17 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(isEditNicknameDialogOpen) {
                 Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
+                    if (it == null) {
+                        val defaultNewPlayer = Player(
+                            id = Auth.getCurrentUser()!!.uid,
+                            name = Auth.getCurrentUser()!!.displayName ?: "",
+                        )
+                        Firestore.Players.setPlayer(defaultNewPlayer) {}
+                        player = defaultNewPlayer
+                        return@getPlayerById
+                    }
+
                     player = it
-                        ?: if (Auth.getCurrentUser() != null) {
-                            Player(
-                                id = Auth.getCurrentUser()!!.uid,
-                                name = Auth.getCurrentUser()!!.displayName ?: "",
-                            )
-                        } else null
                 }
             }
 
