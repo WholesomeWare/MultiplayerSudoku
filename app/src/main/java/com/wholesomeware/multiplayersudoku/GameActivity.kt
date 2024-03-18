@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,14 +17,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Backspace
-import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +48,7 @@ import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
+import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isDone
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
@@ -126,13 +129,17 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
+            val numberButtonHeight = remember { 92.dp }
+            
             var isExitDialogOpen by remember { mutableStateOf(false) }
 
+            val isOwner by remember(room) { mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
 
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
-            var isCorrect by remember { mutableStateOf(true) }
+            val isCorrect by remember(sudoku) { mutableStateOf(SudokuSolver.isGridCorrect(sudoku.currentGrid)) }
+            val isDone by remember(sudoku) { mutableStateOf(sudoku.isDone()) }
 
             BackHandler {
                 isExitDialogOpen = true
@@ -152,13 +159,11 @@ class GameActivity : ComponentActivity() {
                 }
                 room = room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))
                 Firestore.Rooms.setRoom(room) {}
-
-                isCorrect = SudokuSolver.isGridCorrect(sudoku.currentGrid)
             }
 
             if (isExitDialogOpen) {
                 AlertDialog(
-                    title = { Text(text = stringResource(id = R.string.sure_logout)) },
+                    title = { Text(text = stringResource(id = R.string.sure_exit)) },
                     onDismissRequest = { isExitDialogOpen = false },
                     confirmButton = {
                         ShapedButton(onClick = { Firestore.Rooms.leaveRoom(room.id) {} }) {
@@ -173,19 +178,32 @@ class GameActivity : ComponentActivity() {
                 )
             }
 
+            if (isDone) {
+                AlertDialog(
+                    title = {},
+                    onDismissRequest = {},
+                    confirmButton = {
+                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(room.id) {} }) {
+                            Text(text = stringResource(id = R.string.ok))
+                        }
+                    },
+                )
+            }
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Column{
+                Column(modifier = Modifier.fillMaxSize()) {
                     CenterAlignedTopAppBar(
                         title = {
-                            Text(text = "${currentTimeMillis / 1000 / 60}:" +
-                                    (currentTimeMillis / 1000 % 60).toString().padStart(2, '0')
+                            Text(
+                                text = "${currentTimeMillis / 1000 / 60}:" +
+                                        (currentTimeMillis / 1000 % 60).toString().padStart(2, '0')
                             )
                         },
                         navigationIcon = {
-                            IconButton(onClick = {isExitDialogOpen = true}) {
+                            IconButton(onClick = { isExitDialogOpen = true }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
@@ -202,72 +220,82 @@ class GameActivity : ComponentActivity() {
                             PlayerDisplay(
                                 modifier = Modifier.padding(8.dp),
                                 player = player,
+                                adminControlsEnabled = isOwner,
+                                onKickRequest = {
+                                    Firestore.Rooms.kickPlayer(room.id, player.id) {}
+                                },
                                 isMini = true,
                             )
                         }
                     }
-                    SudokuDisplay(
-                        modifier = Modifier
-                            .padding(16.dp),
-                        sudoku = room.sudoku.toSudoku(),
-                        onCellClick = { row, column ->
-                            selectedCell = if (selectedCell == row to column) {
-                                null
-                            } else {
-                                row to column
-                            }
-                        },
-                        selectedCells = listOfNotNull(selectedCell),
-                        cellBorderColor = if (isCorrect) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.error,
-                    )
+
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        SudokuDisplay(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            sudoku = room.sudoku.toSudoku(),
+                            onCellClick = { row, column ->
+                                selectedCell = if (selectedCell == row to column) {
+                                    null
+                                } else {
+                                    row to column
+                                }
+                            },
+                            selectedCells = listOfNotNull(selectedCell),
+                            cellBorderColor = if (isCorrect) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.error,
+                        )
+                    }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 1) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "1")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 2) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "2")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 3) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "3")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 4) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "4")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 5) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "5")
                         }
@@ -277,51 +305,51 @@ class GameActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 6) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "6")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 7) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "7")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 8) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "8")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 9) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Text(text = "9")
                         }
-                        LargeFloatingActionButton(
+                        FloatingActionButton(
                             onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 0) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(110.dp)
-                                .padding(6.dp)
+                                .height(numberButtonHeight)
+                                .padding(4.dp)
                         ) {
                             Icon(
-                                Icons.Filled.Backspace,
+                                Icons.AutoMirrored.Default.Backspace,
                                 contentDescription = null
                             )
                         }

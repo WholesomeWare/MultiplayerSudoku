@@ -61,6 +61,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.csakitheone.wholesomeware_brand.WholesomeWare
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
@@ -477,22 +478,31 @@ class MainActivity : ComponentActivity() {
                         text = stringResource(id = R.string.made),
                     )
                     Row {
-                        Icon(
-                            painter = painterResource(id = com.csakitheone.wholesomeware_brand.R.drawable.ic_wholesomeware),
-                            contentDescription = null,
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.instagram),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable {
-                                    val intent = Intent(
+                        IconButton(
+                            onClick = {
+                                WholesomeWare.openPlayStore(this@MainActivity)
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = com.csakitheone.wholesomeware_brand.R.drawable.ic_wholesomeware),
+                                contentDescription = null,
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                startActivity(
+                                    Intent(
                                         Intent.ACTION_VIEW,
                                         Uri.parse("https://www.instagram.com/viktoriakerecsenyi/")
                                     )
-                                    startActivity(intent)
-                                }
-                        )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.instagram),
+                                contentDescription = null,
+                            )
+                        }
                     }
                 }
             }

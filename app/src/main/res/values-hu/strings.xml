@@ -6,6 +6,7 @@
     <string name="difficulty_medium">Közepes</string>
     <string name="difficulty_hard">Nehéz</string>
 
+    <string name="ok">Ok</string>
     <string name="yes">Igen</string>
     <string name="no">Nem</string>
 
@@ -38,7 +39,7 @@
      <string name="room_not_found">Nem található a szoba</string>
     <string name="join_failed">Nem sikerült csatlakozni a szobához</string>
     <string name="kicked_out">Kirúgtak a szobából</string>
-    <string name="sure_logout">Biztosan ki szeretnél lépni?</string>
+    <string name="sure_exit">Biztosan ki szeretnél lépni?</string>
     <string name="room_description">Hívd meg a barátaidat, és játszatok együtt!</string>
     <string name="share">Megosztás</string>
     <string name="invite_player">Játékos meghívása</string>

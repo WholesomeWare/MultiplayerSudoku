@@ -135,9 +135,21 @@ class Firestore {
              * Beállít egy szobát azonosító alapján. Ha a szoba nem létezik, akkor létrehozza.
              */
             fun setRoom(room: Room, onResult: (Boolean) -> Unit) {
-                App.instance.firestore.collection("rooms").document(room.id).set(room)
-                    .addOnCompleteListener {
-                        onResult(it.isSuccessful)
+                App.instance.firestore.collection("rooms")
+                    .whereEqualTo("ownerId", room.ownerId)
+                    .whereNotEqualTo("id", room.id)
+                    .get()
+                    .addOnCompleteListener { taskDeleteExisting ->
+                        App.instance.firestore.runTransaction { transaction ->
+                            for (document in taskDeleteExisting.result) {
+                                transaction.delete(document.reference)
+                            }
+                            val newRoomRef = App.instance.firestore.collection("rooms").document(room.id)
+                            transaction.set(newRoomRef, room)
+                        }
+                            .addOnCompleteListener { taskTransactionComplete ->
+                                onResult(taskTransactionComplete.isSuccessful)
+                            }
                     }
             }
 
@@ -161,7 +173,11 @@ class Firestore {
                     }
             }
 
-            fun leaveRoom(id: String, deleteRoomIfEmpty: Boolean = true, onResult: (Boolean) -> Unit) {
+            fun leaveRoom(
+                id: String,
+                deleteRoomIfEmpty: Boolean = true,
+                onResult: (Boolean) -> Unit
+            ) {
                 if (Auth.getCurrentUser()?.uid.isNullOrBlank() || id.isBlank()) {
                     onResult(false)
                     return

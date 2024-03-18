@@ -2,7 +2,6 @@ package com.wholesomeware.multiplayersudoku
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -46,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -179,7 +179,11 @@ class LobbyActivity : ComponentActivity() {
             LaunchedEffect(room) {
                 // Kirúgás észlelése
                 if (!isLoading && !room.players.contains(Auth.getCurrentUser()?.uid)) {
-                    Toast.makeText(this@LobbyActivity, getString(R.string.kicked_out), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@LobbyActivity,
+                        getString(R.string.kicked_out),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                     finish()
                 }
@@ -196,7 +200,7 @@ class LobbyActivity : ComponentActivity() {
 
             if (isExitDialogOpen) {
                 AlertDialog(
-                    title = { Text(text = stringResource(id = R.string.sure_logout)) },
+                    title = { Text(text = stringResource(id = R.string.sure_exit)) },
                     onDismissRequest = { isExitDialogOpen = false },
                     confirmButton = {
                         ShapedButton(onClick = { finish() }) {
@@ -218,9 +222,11 @@ class LobbyActivity : ComponentActivity() {
                 Column {
                     CenterAlignedTopAppBar(
                         title = {
-                            Text(text = stringResource(
-                                id = R.string.room_title,
-                                ownerPlayer.name)
+                            Text(
+                                text = stringResource(
+                                    id = R.string.room_title,
+                                    ownerPlayer.name
+                                )
                             )
                         },
                         navigationIcon = {

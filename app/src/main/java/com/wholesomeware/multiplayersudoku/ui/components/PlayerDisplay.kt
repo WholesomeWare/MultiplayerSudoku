@@ -1,5 +1,6 @@
 package com.wholesomeware.multiplayersudoku.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -38,9 +39,11 @@ fun PlayerDisplay(
                 },
                 trailingIcon = {
                     if (adminControlsEnabled) {
-                        IconButton(onClick = { onKickRequest() }) {
-                            Icon(imageVector = Icons.AutoMirrored.Default.Logout, contentDescription = null)
-                        }
+                        Icon(
+                            modifier = Modifier.clickable { onKickRequest() },
+                            imageVector = Icons.AutoMirrored.Default.Logout,
+                            contentDescription = null,
+                        )
                     }
                 },
             )

@@ -5,6 +5,7 @@
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>
 
+    <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
@@ -39,7 +40,7 @@
     <string name="room_not_found"></string>
     <string name="join_failed"></string>
     <string name="kicked_out"></string>
-    <string name="sure_logout"></string>
+    <string name="sure_exit">Are you sure you want to exit?</string>
     <string name="room_description"></string>
     <string name="share">Share</string>
     <string name="invite_player">Invite player</string>
