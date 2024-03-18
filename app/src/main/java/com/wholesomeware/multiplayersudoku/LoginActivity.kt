@@ -47,6 +47,19 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Auth.onActivityResult(this, requestCode, resultCode, data) {
+            startActivity(
+                Intent(
+                    this,
+                    MainActivity::class.java
+                )
+            )
+            finish()
+        }
+    }
+
     @Preview
     @Composable
     private fun LoginScreen() {
@@ -153,7 +166,7 @@ class LoginActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .padding(8.dp),
                         onClick = {
-                            /*TODO Auth függvény meghívása*/
+                            Auth.signInWithGoogle(this@LoginActivity)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,

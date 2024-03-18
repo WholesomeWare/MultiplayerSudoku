@@ -1,12 +1,21 @@
 package com.wholesomeware.multiplayersudoku.firebase
 
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.wholesomeware.multiplayersudoku.R
 
 class Auth {
     companion object {
 
         private val auth = Firebase.auth
+        private val REQUEST_CODE_GOOGLE_ONE_TAP = 100
 
         /**
          * Az aktuálisan bejelentkezett felhasználó. Ha nincs bejelentkezett felhasználó, akkor `null`.
@@ -58,9 +67,67 @@ class Auth {
         /**
          * Bejelentkeztet egy felhasználót a Google fiókjával.
          */
-        fun signInWithGoogle() {
-            //TODO Csákinak: Google bejelentkezés miután Vikivel aláírást cseréltetek
-            throw NotImplementedError()
+        fun signInWithGoogle(activity: Activity) {
+            val oneTapClient = Identity.getSignInClient(activity)
+            val signInRequest = BeginSignInRequest.builder()
+                .setGoogleIdTokenRequestOptions(
+                    BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                        .setSupported(true)
+                        .setServerClientId(activity.getString(R.string.web_client_id))
+                        .setFilterByAuthorizedAccounts(false)
+                        .build()
+                )
+                .build()
+            oneTapClient.beginSignIn(signInRequest)
+                .addOnCompleteListener {
+                    val result = it.result
+                    try {
+                        activity.startIntentSenderForResult(
+                            result.pendingIntent.intentSender,
+                            REQUEST_CODE_GOOGLE_ONE_TAP,
+                            null,
+                            0,
+                            0,
+                            0,
+                            null
+                        )
+                    } catch (e: Exception) {
+                        Log.d("Auth", "Error starting Google One Tap: $e")
+                    }
+                }
+        }
+
+        fun onActivityResult(
+            activity: Activity,
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?,
+            onResult: (Boolean) -> Unit = {},
+        ) {
+            if (requestCode != REQUEST_CODE_GOOGLE_ONE_TAP) return
+
+            val oneTapClient = Identity.getSignInClient(activity)
+
+            try {
+                val credential = oneTapClient.getSignInCredentialFromIntent(data)
+                val idToken = credential.googleIdToken
+                when {
+                    idToken != null -> {
+                        auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
+                            .addOnCompleteListener {
+                                onResult(it.isSuccessful)
+                            }
+                    }
+                    else -> {
+                        // Shouldn't happen.
+                        Log.d("Auth", "No ID token!")
+                        onResult(false)
+                    }
+                }
+            } catch (e: ApiException) {
+                Log.d("Auth", "Error getting credential: ${e.statusCode}")
+                onResult(false)
+            }
         }
 
         /**
@@ -74,7 +141,7 @@ class Auth {
             auth.currentUser?.delete()
                 ?.addOnCompleteListener {
                     onResult(it.isSuccessful)
-                    if (it.isSuccessful) signOut()
+                    signOut()
                 }
         }
 

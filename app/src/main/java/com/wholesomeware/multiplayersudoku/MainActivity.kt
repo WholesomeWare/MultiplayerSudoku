@@ -191,19 +191,15 @@ class MainActivity : ComponentActivity() {
                                 val currentUser = Auth.getCurrentUser()
                                 if (currentUser != null) {
                                     Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
-                                        isLoading = false
-                                        if (isSuccess) {
-                                            Auth.deleteCurrentUser {
-                                                if (it) {
-                                                    startActivity(
-                                                        Intent(
-                                                            this@MainActivity,
-                                                            LoginActivity::class.java
-                                                        )
-                                                    )
-                                                    finish()
-                                                }
-                                            }
+                                        Auth.deleteCurrentUser {
+                                            startActivity(
+                                                Intent(
+                                                    this@MainActivity,
+                                                    LoginActivity::class.java
+                                                )
+                                            )
+                                            finish()
+                                            isLoading = false
                                         }
                                     }
                                 }
@@ -236,7 +232,6 @@ class MainActivity : ComponentActivity() {
                             Text(text = stringResource(id = R.string.app_name))
                         },
                         navigationIcon = {
-                            //TODO: app ikon ide
                             Icon(
                                 modifier = Modifier
                                     .width(48.dp)
