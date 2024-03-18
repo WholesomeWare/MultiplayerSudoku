@@ -13,12 +13,18 @@ class SudokuSolver {
 
         private var grid = Array(GRID_SIZE) { IntArray(GRID_SIZE) }
 
+        fun Sudoku.isDone(): Boolean {
+            return isGridCorrect(currentGrid) && currentGrid.all { row -> row.all { it != 0 } }
+        }
+
         fun isGridSolvable(grid: Array<IntArray>): Boolean {
             this.grid = grid.copy()
             return solve()
         }
 
         fun isGridCorrect(grid: Array<IntArray>): Boolean {
+            if (grid.isEmpty()) return false
+
             val rows: List<List<Int>> = grid.map { row -> row.filter { it != 0 } }
             if (rows.any { it.size != it.toSet().size }) {
                 return false
@@ -28,19 +34,15 @@ class SudokuSolver {
             if (columns.any { it.size != it.toSet().size }) {
                 return false
             }
-            val boxes: List<List<Int>> = (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).flatMap { rowStart ->
-                (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).map { columnStart ->
-                    (rowStart until rowStart + GRID_SIZE_SQUARE_ROOT).flatMap { row ->
-                        (columnStart until columnStart + GRID_SIZE_SQUARE_ROOT).map { column -> grid[row][column] }
-                    }.filter { it != 0 }
+            val boxes: List<List<Int>> =
+                (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).flatMap { rowStart ->
+                    (0 until GRID_SIZE step GRID_SIZE_SQUARE_ROOT).map { columnStart ->
+                        (rowStart until rowStart + GRID_SIZE_SQUARE_ROOT).flatMap { row ->
+                            (columnStart until columnStart + GRID_SIZE_SQUARE_ROOT).map { column -> grid[row][column] }
+                        }.filter { it != 0 }
+                    }
                 }
-            }
             return !boxes.any { it.size != it.toSet().size }
-        }
-
-        fun Sudoku.isSolvable(): Boolean {
-            this@Companion.grid = this.currentGrid.copy()
-            return solve()
         }
 
         private fun Array<IntArray>.copy() = Array(size) { get(it).clone() }
