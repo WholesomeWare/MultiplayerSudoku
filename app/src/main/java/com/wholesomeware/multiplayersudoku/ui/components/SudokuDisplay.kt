@@ -42,7 +42,8 @@ fun SudokuDisplay(
 ) {
     val sectionBorderThickness = 3.dp
     Box(
-        modifier = modifier,
+        modifier = modifier
+            .border(sectionBorderThickness, cellBorderColor),
     ) {
         Column(
             modifier = Modifier

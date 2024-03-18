@@ -168,10 +168,17 @@ class LobbyActivity : ComponentActivity() {
             var selectedDifficulty by remember(room) {
                 mutableStateOf(Sudoku.Difficulty.entries[room.difficultyId])
             }
+            //TODO: igen
             var isDifficultySelectorOpen by remember { mutableStateOf(false) }
 
             BackHandler {
                 isExitDialogOpen = true
+            }
+
+            LaunchedEffect(isDifficultySelectorOpen) {
+                if (!isOwner) {
+                    isDifficultySelectorOpen = false
+                }
             }
 
             // Ez az effect akkor fut le, amikor a szobában valami megváltozik.
@@ -295,14 +302,16 @@ class LobbyActivity : ComponentActivity() {
                         actions = {
                             ExposedDropdownMenuBox(
                                 expanded = isDifficultySelectorOpen,
-                                onExpandedChange = { isDifficultySelectorOpen = it },
+                                onExpandedChange = {
+                                    isDifficultySelectorOpen = it
+                                },
                             ) {
                                 OutlinedTextField(
                                     modifier = Modifier
                                         .menuAnchor()
                                         .width(200.dp)
                                         .padding(horizontal = 8.dp),
-                                    enabled = !room.isStarted && isOwner,
+                                    enabled = isOwner,
                                     label = { Text(text = "Nehézség") },
                                     value = stringResource(id = selectedDifficulty.stringResourceId),
                                     onValueChange = {},

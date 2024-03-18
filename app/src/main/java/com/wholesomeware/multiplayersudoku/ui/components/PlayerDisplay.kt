@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -22,26 +23,51 @@ fun PlayerDisplay(
     player: Player,
     adminControlsEnabled: Boolean = false,
     onKickRequest: () -> Unit = {},
+    isMini: Boolean = false,
 ) {
     Box(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
+        if (isMini) {
+            AssistChip(
+                onClick = {},
+                label = { Text(text = player.name) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = null,
+                    )
+                },
+                trailingIcon = {
+                    if (adminControlsEnabled) {
+                        IconButton(onClick = { onKickRequest() }) {
+                            Icon(imageVector = Icons.AutoMirrored.Default.Logout, contentDescription = null)
+                        }
+                    }
+                },
+            )
+        }
+        else {
+            Row(
                 modifier = Modifier.padding(8.dp),
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = null,
-            )
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f),
-                text = player.name,
-            )
-            if (adminControlsEnabled) {
-                IconButton(onClick = { onKickRequest() }) {
-                    Icon(imageVector = Icons.AutoMirrored.Default.Logout, contentDescription = null)
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    modifier = Modifier.padding(8.dp),
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .weight(1f),
+                    text = player.name,
+                )
+                if (adminControlsEnabled) {
+                    IconButton(onClick = { onKickRequest() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.Logout,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }

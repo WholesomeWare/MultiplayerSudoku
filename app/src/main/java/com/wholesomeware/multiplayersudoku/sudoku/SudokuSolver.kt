@@ -19,12 +19,13 @@ class SudokuSolver {
         }
 
         fun Sudoku.isSolvable() : Boolean {
-            this@Companion.grid = this.startingGrid.copy()
+            this@Companion.grid = this.currentGrid.copy()
             return solve()
         }
 
         private fun Array<IntArray>.copy() = Array(size) { get(it).clone() }
 
+        //TODO Csákinak: brainfuck
         private fun solve() : Boolean {
             for (i in 0 until GRID_SIZE) {
                 for (j in 0 until GRID_SIZE) {

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,17 +43,25 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
+import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuGenerator
+import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
+import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isSolvable
+import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 class GameActivity : ComponentActivity() {
     private var room by mutableStateOf(Room())
     private var roomListenerRegistration: ListenerRegistration? = null
+    private var currentTimeMillis by mutableLongStateOf(0L)
+    private var timer: Timer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +75,23 @@ class GameActivity : ComponentActivity() {
     override fun onDestroy() {
         roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        timer = Timer().apply {
+            scheduleAtFixedRate(timerTask {
+                if (room.startTime > 0) {
+                    currentTimeMillis = System.currentTimeMillis() - room.startTime
+                }
+            }, 10000L, 1000L)
+        }
+    }
+
+    override fun onPause() {
+        timer?.cancel()
+        timer = null
+        super.onPause()
     }
 
     private fun initializeRoom() {
@@ -91,17 +125,29 @@ class GameActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Preview
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
             var isExitDialogOpen by remember { mutableStateOf(false) }
 
+            var players by remember { mutableStateOf(emptyList<Player>()) }
+
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            var isSolvable by remember { mutableStateOf(true) }
 
             BackHandler {
                 isExitDialogOpen = true
+            }
+
+            LaunchedEffect(room) {
+                // Lekérjük a játékosokat id alapján, mert a `room` csak az id-jüket tárolja
+                Firestore.Players.getPlayersByIds(room.players) {
+                    //ownerPlayer = it.firstOrNull { player -> player.id == room.ownerId } ?: Player()
+                    players = it
+                }
             }
 
             LaunchedEffect(sudoku) {
@@ -110,6 +156,8 @@ class GameActivity : ComponentActivity() {
                 }
                 room = room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))
                 Firestore.Rooms.setRoom(room) {}
+
+                isSolvable = sudoku.isSolvable()
             }
 
             if (isExitDialogOpen) {
@@ -134,6 +182,34 @@ class GameActivity : ComponentActivity() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 Column{
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(text = "${currentTimeMillis / 1000 / 60}:" +
+                                    (currentTimeMillis / 1000 % 60).toString().padStart(2, '0')
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {isExitDialogOpen = true}) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        },
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                    ) {
+                        players.forEach { player ->
+                            PlayerDisplay(
+                                modifier = Modifier.padding(8.dp),
+                                player = player,
+                                isMini = true,
+                            )
+                        }
+                    }
                     SudokuDisplay(
                         modifier = Modifier
                             .padding(16.dp),
@@ -146,7 +222,8 @@ class GameActivity : ComponentActivity() {
                             }
                         },
                         selectedCells = listOfNotNull(selectedCell),
-                        cellBorderColor = MaterialTheme.colorScheme.primary,
+                        cellBorderColor = if (isSolvable) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.error,
                     )
 
                     Row(
