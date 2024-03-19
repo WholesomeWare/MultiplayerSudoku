@@ -112,19 +112,24 @@ class Firestore {
                     }
             }
 
-        }
-    }
+            fun renamePlayer(id: String, newName: String, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("players").document(id)
+                    .update("name", newName)
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
+            }
 
-    class PlayerSelections {
-        companion object {
+            fun setPlayerColor(id: String, color: Int, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("players").document(id)
+                    .update("color", color)
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
+            }
 
-            fun selectCell(player: Player?, position: SudokuPosition?, onResult: (Boolean) -> Unit) {
-                if (player == null) {
-                    onResult(false)
-                    return
-                }
-
-                App.instance.firestore.collection("players").document(player.id)
+            fun selectCell(playerId: String, position: SudokuPosition?, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("players").document(playerId)
                     .update("currentPosition", position)
                     .addOnCompleteListener {
                         onResult(it.isSuccessful)

@@ -22,9 +22,11 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -181,8 +184,7 @@ class GameActivity : ComponentActivity() {
             LaunchedEffect(playerSelectedCell) {
                 if (Auth.getCurrentUser() == null) return@LaunchedEffect
 
-                val selfPlayer = players.firstOrNull { it.id == Auth.getCurrentUser()!!.uid }
-                Firestore.PlayerSelections.selectCell(selfPlayer, playerSelectedCell) {}
+                Firestore.Players.selectCell(Auth.getCurrentUser()!!.uid, playerSelectedCell) {}
             }
 
             if (isExitDialogOpen) {
@@ -272,7 +274,7 @@ class GameActivity : ComponentActivity() {
                         SudokuDisplay(
                             modifier = Modifier
                                 .padding(16.dp),
-                            sudoku = room.sudoku.toSudoku(),
+                            sudoku = sudoku,
                             onCellClick = { row, column ->
                                 playerSelectedCell =
                                     if (playerSelectedCell?.equals(row to column) == true) {
