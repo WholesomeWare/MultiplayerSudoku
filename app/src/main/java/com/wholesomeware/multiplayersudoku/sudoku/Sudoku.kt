@@ -57,7 +57,7 @@ class Sudoku(
 
         ONE_MISSING(
             R.string.difficulty_easy,
-            9 * 9 - 1,
+            9 * 9 - 2,
         ),
     }
 }

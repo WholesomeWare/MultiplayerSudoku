@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -135,7 +137,6 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
-            val colorScheme = MaterialTheme.colorScheme
             val numberButtonHeight = remember { 92.dp }
 
             var isExitDialogOpen by remember { mutableStateOf(false) }
@@ -145,9 +146,6 @@ class GameActivity : ComponentActivity() {
 
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var playerSelectedCell by remember { mutableStateOf<SudokuPosition?>(null) }
-            val isCorrect by remember(sudoku) { mutableStateOf(SudokuSolver.isGridCorrect(sudoku.currentGrid)) }
-            val isDone by remember(sudoku) { mutableStateOf(sudoku.isDone()) }
-            val solveDuration by remember(room.endTime) { mutableLongStateOf(room.endTime - room.startTime) }
 
             BackHandler {
                 isExitDialogOpen = true
@@ -169,16 +167,15 @@ class GameActivity : ComponentActivity() {
             }
 
             LaunchedEffect(sudoku) {
-                if (room.id.isBlank()) {
+                if (room.id.isBlank() || room.endTime > 0) {
                     return@LaunchedEffect
                 }
-                Firestore.Rooms.setRoom(room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))) {}
-            }
-
-            LaunchedEffect(isDone) {
-                if (isDone && room.endTime == 0L) {
-                    Firestore.Rooms.setRoom(room.copy(endTime = System.currentTimeMillis())) {}
-                }
+                Firestore.Rooms.setRoom(
+                    room.copy(
+                        sudoku = SerializableSudoku.fromSudoku(sudoku),
+                        endTime = if (sudoku.isDone()) System.currentTimeMillis() else 0L
+                    )
+                ) {}
             }
 
             LaunchedEffect(playerSelectedCell) {
@@ -204,7 +201,9 @@ class GameActivity : ComponentActivity() {
                 )
             }
 
-            if (isDone && solveDuration > 0) {
+            if (sudoku.isDone()) {
+                val solveDuration = room.endTime - room.startTime
+
                 AlertDialog(
                     icon = {
                         Icon(
@@ -212,11 +211,29 @@ class GameActivity : ComponentActivity() {
                             contentDescription = null,
                         )
                     },
-                    title = {
-                        Text(
-                            text = "${solveDuration / 1000 / 60}:" +
-                                    (solveDuration / 1000 % 60).toString().padStart(2, '0')
-                        )
+                    title = { Text(text = stringResource(id = R.string.congratulations)) },
+                    text = {
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(imageVector = Icons.Default.Timer, contentDescription = null)
+                                Text(
+                                    modifier = Modifier.padding(8.dp),
+                                    text = "${solveDuration / 1000 / 60}:" +
+                                            (solveDuration / 1000 % 60).toString().padStart(2, '0')
+                                )
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(imageVector = Icons.Default.People, contentDescription = null)
+                                Text(
+                                    modifier = Modifier.padding(8.dp),
+                                    text = "${players.size}",
+                                )
+                            }
+                        }
                     },
                     onDismissRequest = {},
                     confirmButton = {
@@ -284,7 +301,7 @@ class GameActivity : ComponentActivity() {
                                     }
                             },
                             players = players,
-                            cellBorderColor = if (isCorrect) MaterialTheme.colorScheme.primary
+                            cellBorderColor = if (SudokuSolver.isGridCorrect(sudoku.currentGrid)) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.error,
                         )
                     }

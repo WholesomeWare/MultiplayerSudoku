@@ -232,6 +232,8 @@ class Firestore {
                     return
                 }
 
+                Players.selectCell(Auth.getCurrentUser()!!.uid, null) {}
+
                 App.instance.firestore.collection("rooms").document(id)
                     .update("players", FieldValue.arrayUnion(Auth.getCurrentUser()!!.uid))
                     .addOnCompleteListener {
@@ -249,6 +251,8 @@ class Firestore {
                     onResult(false)
                     return
                 }
+
+                Players.selectCell(Auth.getCurrentUser()!!.uid, null) {}
 
                 App.instance.firestore.collection("rooms").document(id)
                     .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()!!.uid))
