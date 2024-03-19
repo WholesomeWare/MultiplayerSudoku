@@ -541,9 +541,6 @@ class MainActivity : ComponentActivity() {
                                                     )
                                                 )
                                             },
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .align(Alignment.End),
                                         ) {
                                             Icon(
                                                 Icons.Filled.ConnectWithoutContact,
