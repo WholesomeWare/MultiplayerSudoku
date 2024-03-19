@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -37,8 +38,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -55,6 +58,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -98,6 +103,20 @@ class MainActivity : ComponentActivity() {
             var isMenuOpen by remember { mutableStateOf(false) }
             var isEditNicknameDialogOpen by remember { mutableStateOf(false) }
             var isRemoveAccountDialogOpen by remember { mutableStateOf(false) }
+
+            var selectedColor by remember { mutableStateOf(0) } // Index of the selected color
+            val colors = listOf(
+                Color.Blue,
+                Color.Red,
+                Color.Green,
+                Color.Yellow,
+                Color.Magenta,
+                Color.Cyan,
+                Color.Gray,
+                Color.DarkGray,
+                Color.Black,
+                Color.White
+            )
 
             var inviteCode by rememberSaveable { mutableStateOf("") }
 
@@ -314,6 +333,70 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    ElevatedCard(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        ),
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Select Color:"
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                for (i in 0..4) {
+                                    FilledIconButton(
+                                        onClick = {
+                                            selectedColor = i
+                                            player?.let { Firestore.Players.setPlayerColor(it.id, selectedColor){} }
+                                        },
+                                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = colors[i]),
+                                        modifier = Modifier.size(48.dp),
+                                        content = {
+                                            if (i == selectedColor) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Done,
+                                                    contentDescription = null,
+                                                    tint = Color.White
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                for (i in 5..9) {
+                                    FilledIconButton(
+                                        onClick = {
+                                            selectedColor = i
+                                            player?.let { Firestore.Players.setPlayerColor(it.id, selectedColor){} }
+                                        },
+                                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = colors[i]),
+                                        modifier = Modifier.size(48.dp),
+                                        content = {
+                                            if (i == selectedColor) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Done,
+                                                    contentDescription = null,
+                                                    tint = Color.White
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                     ElevatedCard(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
