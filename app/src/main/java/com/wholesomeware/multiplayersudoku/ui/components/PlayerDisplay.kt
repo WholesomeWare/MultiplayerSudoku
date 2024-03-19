@@ -51,8 +51,6 @@ fun PlayerDisplay(
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     leadingIconContentColor = Color(player.color),
-                    trailingIconContentColor = Color(player.color),
-                    labelColor = Color(player.color),
                 ),
             )
         }
@@ -72,7 +70,6 @@ fun PlayerDisplay(
                         .padding(8.dp)
                         .weight(1f),
                     text = player.name,
-                    color = Color(player.color),
                 )
                 if (adminControlsEnabled) {
                     IconButton(onClick = { onKickRequest() }) {

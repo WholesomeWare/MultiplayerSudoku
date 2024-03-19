@@ -76,5 +76,5 @@ val playerColors = listOf(
     Color(0xFFADD8E6),
     Color(0xFFE7BBE9),
     Color(0xFFB19CD9),
-    Color(0xFFE6E6FA),
+    Color(0xFFCFCFC4),
 )
