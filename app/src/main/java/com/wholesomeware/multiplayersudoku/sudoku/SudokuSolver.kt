@@ -23,7 +23,7 @@ class SudokuSolver {
         }
 
         fun isGridCorrect(grid: Array<IntArray>): Boolean {
-            if (grid.isEmpty()) return false
+            if (grid.isEmpty() || grid.first().isEmpty()) return false
 
             val rows: List<List<Int>> = grid.map { row -> row.filter { it != 0 } }
             if (rows.any { it.size != it.toSet().size }) {

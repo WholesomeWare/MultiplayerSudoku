@@ -7,22 +7,30 @@ import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
  * Játékmenet közben, generáláskor és ellenőrzéskor a [Sudoku] osztályt használjuk.
  */
 data class SerializableSudoku(
-    val startingGrid: Map<String, List<Int>> = emptyMap(),
-    val currentGrid: Map<String, List<Int>> = emptyMap(),
+    val startingGrid: String = "",
+    val currentGrid: String = "",
 ) {
     companion object {
         fun fromSudoku(sudoku: Sudoku) = SerializableSudoku(
             startingGrid = sudoku.startingGrid
-                .mapIndexed { index, ints -> index.toString() to ints.toList() }
-                .toMap(),
+                .joinToString(separator = ",") {
+                    it.joinToString(separator = "")
+                },
             currentGrid = sudoku.currentGrid
-                .mapIndexed { index, ints -> index.toString() to ints.toList() }
-                .toMap(),
+                .joinToString(separator = ",") {
+                    it.joinToString(separator = "")
+                },
         )
     }
 
     fun toSudoku() = Sudoku(
-        startingGrid = startingGrid.map { it.value.toIntArray() }.toTypedArray(),
-        currentGrid = currentGrid.map { it.value.toIntArray() }.toTypedArray(),
+        startingGrid = startingGrid
+            .split(',')
+            .map { row -> row.toList().map { it.digitToInt() }.toIntArray() }
+            .toTypedArray(),
+        currentGrid = currentGrid
+            .split(',')
+            .map { row -> row.toList().map { it.digitToInt() }.toIntArray() }
+            .toTypedArray(),
     )
 }
