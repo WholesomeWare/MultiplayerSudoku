@@ -19,6 +19,7 @@
     <string name="login_error">Ellenőrizd a bejelentkezési adatokat, és próbáld újra.</string>
 
     <!-- MainActivity -->
+    <string name="hello_player">Helló %s!</string>
     <string name="edit_nickname">Becenév szerkesztése</string>
     <string name="save">Mentés</string>
     <string name="cancel">Mégse</string>

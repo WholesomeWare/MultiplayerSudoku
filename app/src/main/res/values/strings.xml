@@ -18,6 +18,7 @@
     <string name="login_error">Check your login credentials and try again.</string>
 
     <!-- MainActivity -->
+    <string name="hello_player">Hi %s!</string>
     <string name="edit_nickname">Edit nickname</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>

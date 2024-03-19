@@ -56,6 +56,8 @@ fun SudokuCell(
             Text(
                 modifier = Modifier.alpha(if (isWritable) 1f else .8f),
                 text = value.toString(),
+                color = if (selection == null) MaterialTheme.colorScheme.onSurface
+                else Color.Black,
             )
         }
     }

@@ -27,7 +27,6 @@ fun PlayerDisplay(
     player: Player,
     adminControlsEnabled: Boolean = false,
     onKickRequest: () -> Unit = {},
-    color: Color? = null,
     isMini: Boolean = false,
 ) {
     Box(modifier = modifier) {
@@ -50,11 +49,10 @@ fun PlayerDisplay(
                         )
                     }
                 },
-                colors = if (color == null) AssistChipDefaults.assistChipColors()
-                else AssistChipDefaults.assistChipColors(
-                    leadingIconContentColor = color,
-                    trailingIconContentColor = color,
-                    labelColor = color,
+                colors = AssistChipDefaults.assistChipColors(
+                    leadingIconContentColor = Color(player.color),
+                    trailingIconContentColor = Color(player.color),
+                    labelColor = Color(player.color),
                 ),
             )
         }
@@ -67,13 +65,14 @@ fun PlayerDisplay(
                     modifier = Modifier.padding(8.dp),
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = null,
-                    tint = color ?: MaterialTheme.colorScheme.onBackground,
+                    tint = Color(player.color),
                 )
                 Text(
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f),
                     text = player.name,
+                    color = Color(player.color),
                 )
                 if (adminControlsEnabled) {
                     IconButton(onClick = { onKickRequest() }) {

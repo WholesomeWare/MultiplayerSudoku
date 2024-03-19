@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,10 +31,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ConnectWithoutContact
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -73,6 +78,7 @@ import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.ui.components.FullscreenLoadingIndicator
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
+import com.wholesomeware.multiplayersudoku.ui.theme.playerColors
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,19 +110,13 @@ class MainActivity : ComponentActivity() {
             var isEditNicknameDialogOpen by remember { mutableStateOf(false) }
             var isRemoveAccountDialogOpen by remember { mutableStateOf(false) }
 
-            var selectedColor by remember { mutableStateOf(0) } // Index of the selected color
-            val colors = listOf(
-                Color.Blue,
-                Color.Red,
-                Color.Green,
-                Color.Yellow,
-                Color.Magenta,
-                Color.Cyan,
-                Color.Gray,
-                Color.DarkGray,
-                Color.Black,
-                Color.White
-            )
+            var selectedColor by remember(player) {
+                mutableStateOf(
+                    Color(
+                        player?.color ?: playerColors.first().toArgb()
+                    )
+                )
+            }
 
             var inviteCode by rememberSaveable { mutableStateOf("") }
 
@@ -280,19 +280,6 @@ class MainActivity : ComponentActivity() {
                                     DropdownMenuItem(
                                         leadingIcon = {
                                             Icon(
-                                                imageVector = Icons.AutoMirrored.Default.Label,
-                                                contentDescription = null,
-                                            )
-                                        },
-                                        text = { Text(text = stringResource(id = R.string.edit_nickname)) },
-                                        onClick = {
-                                            isEditNicknameDialogOpen = true
-                                            isMenuOpen = false
-                                        }
-                                    )
-                                    DropdownMenuItem(
-                                        leadingIcon = {
-                                            Icon(
                                                 imageVector = Icons.AutoMirrored.Default.Logout,
                                                 contentDescription = null,
                                             )
@@ -331,68 +318,88 @@ class MainActivity : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
                 ) {
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ),
+                    Card(
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = "Select Color:"
-                            )
+                        Column(modifier = Modifier.padding(8.dp)) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                for (i in 0..4) {
-                                    FilledIconButton(
-                                        onClick = {
-                                            selectedColor = i
-                                            player?.let { Firestore.Players.setPlayerColor(it.id, selectedColor){} }
-                                        },
-                                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = colors[i]),
-                                        modifier = Modifier.size(48.dp),
-                                        content = {
-                                            if (i == selectedColor) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Done,
-                                                    contentDescription = null,
-                                                    tint = Color.White
-                                                )
-                                            }
-                                        }
+                                Text(
+                                    modifier = Modifier.padding(8.dp),
+                                    text = stringResource(
+                                        id = R.string.hello_player,
+                                        player?.name ?: ""
+                                    ),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                IconButton(onClick = { isEditNicknameDialogOpen = true }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = null
                                     )
                                 }
                             }
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                for (i in 5..9) {
+                                playerColors.take(5).forEach { color ->
                                     FilledIconButton(
+                                        modifier = Modifier.padding(4.dp),
                                         onClick = {
-                                            selectedColor = i
-                                            player?.let { Firestore.Players.setPlayerColor(it.id, selectedColor){} }
+                                            selectedColor = color
+                                            Firestore.Players.setPlayerColor(
+                                                Auth.getCurrentUser()!!.uid,
+                                                selectedColor.toArgb()
+                                            ) {}
                                         },
-                                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = colors[i]),
-                                        modifier = Modifier.size(48.dp),
-                                        content = {
-                                            if (i == selectedColor) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Done,
-                                                    contentDescription = null,
-                                                    tint = Color.White
-                                                )
-                                            }
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = color,
+                                            contentColor = Color.Black,
+                                        ),
+                                    ) {
+                                        if (color == selectedColor) {
+                                            Icon(
+                                                imageVector = Icons.Default.Done,
+                                                contentDescription = null,
+                                            )
                                         }
-                                    )
+                                    }
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                playerColors.takeLast(5).forEach { color ->
+                                    FilledIconButton(
+                                        modifier = Modifier.padding(4.dp),
+                                        onClick = {
+                                            selectedColor = color
+                                            Firestore.Players.setPlayerColor(
+                                                Auth.getCurrentUser()!!.uid,
+                                                selectedColor.toArgb()
+                                            ) {}
+                                        },
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = color,
+                                            contentColor = Color.Black,
+                                        ),
+                                    ) {
+                                        if (color == selectedColor) {
+                                            Icon(
+                                                imageVector = Icons.Default.Done,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -408,8 +415,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Image(
                                 modifier = Modifier
-                                    .height(160.dp)
-                                    .alpha(.5f),
+                                    .height(140.dp)
+                                    .alpha(.3f),
                                 painter = painterResource(id = R.drawable.undraw_world_is_mine),
                                 contentDescription = null,
                             )
@@ -474,8 +481,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Image(
                                 modifier = Modifier
-                                    .height(160.dp)
-                                    .alpha(.5f),
+                                    .height(120.dp)
+                                    .alpha(.3f),
                                 painter = painterResource(id = R.drawable.undraw_real_time_collaboration),
                                 contentDescription = null,
                             )
@@ -520,34 +527,35 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     ),
-                                )
-
-                                ShapedButton(
-                                    enabled = inviteCode.isNotBlank(),
-                                    onClick = {
-                                        startActivity(
-                                            Intent(
-                                                this@MainActivity,
-                                                LobbyActivity::class.java
-                                            ).putExtra(
-                                                LobbyActivity.EXTRA_ROOM_ID,
-                                                inviteCode.trim()
+                                    trailingIcon = {
+                                        TextButton(
+                                            enabled = inviteCode.isNotBlank(),
+                                            onClick = {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        LobbyActivity::class.java
+                                                    ).putExtra(
+                                                        LobbyActivity.EXTRA_ROOM_ID,
+                                                        inviteCode.trim()
+                                                    )
+                                                )
+                                            },
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .align(Alignment.End),
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.ConnectWithoutContact,
+                                                contentDescription = null
                                             )
-                                        )
+                                            Text(
+                                                getString(R.string.join),
+                                                modifier = Modifier.padding(start = 8.dp),
+                                            )
+                                        }
                                     },
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .align(Alignment.End),
-                                ) {
-                                    Icon(
-                                        Icons.Filled.ConnectWithoutContact,
-                                        contentDescription = null
-                                    )
-                                    Text(
-                                        getString(R.string.join),
-                                        modifier = Modifier.padding(start = 8.dp),
-                                    )
-                                }
+                                )
                             }
                         }
                     }

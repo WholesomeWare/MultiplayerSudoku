@@ -1,4 +1,5 @@
 package com.wholesomeware.multiplayersudoku.ui.theme
+
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF5B53A8)
@@ -63,5 +64,17 @@ val md_theme_dark_surfaceTint = Color(0xFFC6BFFF)
 val md_theme_dark_outlineVariant = Color(0xFF47464F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-
 val seed = Color(0xFF4D4A69)
+
+val playerColors = listOf(
+    Color(0xFFF88379),
+    Color(0xFFFFE0B2),
+    Color(0xFFFDFD96),
+    Color(0xFF9CB69E),
+    Color(0xFF90EE90),
+    Color(0xFF7FFFD4),
+    Color(0xFFADD8E6),
+    Color(0xFFE7BBE9),
+    Color(0xFFB19CD9),
+    Color(0xFFE6E6FA),
+)

@@ -278,7 +278,6 @@ class GameActivity : ComponentActivity() {
                                 onKickRequest = {
                                     Firestore.Rooms.kickPlayer(room.id, player.id) {}
                                 },
-                                color = Color(player.color),
                                 isMini = true,
                             )
                         }
