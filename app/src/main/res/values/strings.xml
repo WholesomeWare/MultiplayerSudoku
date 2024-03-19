@@ -40,9 +40,10 @@
     <!-- LobbyActivity -->
     <string name="room_not_found">Room not found</string>
     <string name="join_failed">Failed to join room</string>
+    <string name="room_full">Room is full</string>
     <string name="kicked_out">You have been kicked out of the room</string>
     <string name="sure_exit">Are you sure you want to exit?</string>
-    <string name="room_description">Invite your friends and play together!</string>
+    <string name="room_description">Invite your friends and play together! Maximum 10 players can be in a room.</string>
     <string name="share">Share</string>
     <string name="invite_player">Invite player</string>
     <string name="difficulty">Difficulty</string>

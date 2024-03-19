@@ -133,6 +133,11 @@ class LobbyActivity : ComponentActivity() {
 
             Firestore.Rooms.getRoomById(this, roomId) {
                 room = it ?: return@getRoomById
+                if (room.players.size > 10) {
+                    Toast.makeText(this, getString(R.string.room_full), Toast.LENGTH_SHORT).show()
+                    finish()
+                    return@getRoomById
+                }
             }
             roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) { newRoom ->
                 // Kirúgás észlelése
