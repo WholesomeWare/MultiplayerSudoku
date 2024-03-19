@@ -345,7 +345,7 @@ class MainActivity : ComponentActivity() {
                                 ShapedButton(
                                     onClick = {
                                         isLoading = true
-                                        RoomManager.createRoom { id ->
+                                        RoomManager.createRoom(this@MainActivity) { id ->
                                             isLoading = false
                                             if (id != null) {
                                                 startActivity(

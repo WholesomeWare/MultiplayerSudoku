@@ -1,5 +1,8 @@
 package com.wholesomeware.multiplayersudoku.model
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+
 /**
  * Egy játékos adatait tartalmazó osztály.
  * @param id A játékos azonosítója. Megegyezik a Firebase uid-vel.
@@ -8,4 +11,6 @@ package com.wholesomeware.multiplayersudoku.model
 data class Player(
     val id: String = "",
     val name: String = "",
+    val color: Int = Color.Gray.toArgb(),
+    val currentPosition: SudokuPosition? = null,
 )

@@ -1,15 +1,48 @@
 package com.wholesomeware.multiplayersudoku.firebase
 
+import android.content.Context
+import android.os.Build
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.App
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
+import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 
 class Firestore {
     class Players {
         companion object {
+
+            private val playerListeners = mutableListOf<ListenerRegistration>()
+
+            fun addPlayerListener(id: String, listener: (Player?) -> Unit): ListenerRegistration {
+                val registration = App.instance.firestore
+                    .collection("players")
+                    .document(id)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            listener(null)
+                            return@addSnapshotListener
+                        }
+
+                        val player = snapshot?.toObject(Player::class.java)
+                            ?.copy(id = snapshot.id)
+                        listener(player)
+                    }
+                playerListeners.add(registration)
+                return registration
+            }
+
+            fun removePlayerListener(registration: ListenerRegistration) {
+                registration.remove()
+                playerListeners.remove(registration)
+            }
+
+            fun removeAllPlayerListeners() {
+                playerListeners.forEach { it.remove() }
+                playerListeners.clear()
+            }
 
             /**
              * Lekér egy játékost azonosító alapján.
@@ -82,6 +115,25 @@ class Firestore {
         }
     }
 
+    class PlayerSelections {
+        companion object {
+
+            fun selectCell(player: Player?, position: SudokuPosition?, onResult: (Boolean) -> Unit) {
+                if (player == null) {
+                    onResult(false)
+                    return
+                }
+
+                App.instance.firestore.collection("players").document(player.id)
+                    .update("currentPosition", position)
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
+                    }
+            }
+
+        }
+    }
+
     class Rooms {
         companion object {
 
@@ -119,9 +171,18 @@ class Firestore {
              * Lekér egy szobát azonosító alapján.
              * @param id A szoba azonosítója. Megegyezik a meghívó kódjával.
              */
-            fun getRoomById(id: String, onResult: (Room?) -> Unit) {
+            fun getRoomById(context: Context, id: String, onResult: (Room?) -> Unit) {
                 App.instance.firestore.collection("rooms").document(id).get()
                     .addOnSuccessListener {
+                        val gameVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
+                        } else {
+                            context.packageManager.getPackageInfo(context.packageName, 0).versionCode.toLong()
+                        }
+                        if (!it.exists() || it.getLong("gameVersion") != gameVersion) {
+                            onResult(null)
+                            return@addOnSuccessListener
+                        }
                         val room = it.toObject(Room::class.java)
                             ?.copy(id = it.id)
                         onResult(room)
@@ -174,6 +235,7 @@ class Firestore {
             }
 
             fun leaveRoom(
+                context: Context,
                 id: String,
                 deleteRoomIfEmpty: Boolean = true,
                 onResult: (Boolean) -> Unit
@@ -188,7 +250,7 @@ class Firestore {
                     .addOnCompleteListener { leaveTask ->
                         onResult(leaveTask.isSuccessful)
                         if (deleteRoomIfEmpty) {
-                            getRoomById(id) { room ->
+                            getRoomById(context, id) { room ->
                                 if (room?.players?.isEmpty() == true) {
                                     deleteRoomById(id) {}
                                 }

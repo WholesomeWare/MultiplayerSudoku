@@ -18,7 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Backspace
-import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,11 +48,13 @@ import com.wholesomeware.multiplayersudoku.firebase.Firestore
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
+import com.wholesomeware.multiplayersudoku.model.SudokuPosition
+import com.wholesomeware.multiplayersudoku.model.SudokuPosition.Companion.toSudokuPosition
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isDone
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
-import com.wholesomeware.multiplayersudoku.ui.components.SudokuDisplay
+import com.wholesomeware.multiplayersudoku.ui.components.sudoku.SudokuDisplay
 import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 import java.util.Timer
 import kotlin.concurrent.timerTask
@@ -108,7 +111,7 @@ class GameActivity : ComponentActivity() {
                 return@joinRoom
             }
 
-            Firestore.Rooms.getRoomById(roomId) {
+            Firestore.Rooms.getRoomById(this, roomId) {
                 room = it ?: return@getRoomById
             }
             roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) { newRoom ->
@@ -129,17 +132,19 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
+            val colorScheme = MaterialTheme.colorScheme
             val numberButtonHeight = remember { 92.dp }
-            
+
             var isExitDialogOpen by remember { mutableStateOf(false) }
 
             val isOwner by remember(room) { mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
 
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
-            var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            var playerSelectedCell by remember { mutableStateOf<SudokuPosition?>(null) }
             val isCorrect by remember(sudoku) { mutableStateOf(SudokuSolver.isGridCorrect(sudoku.currentGrid)) }
             val isDone by remember(sudoku) { mutableStateOf(sudoku.isDone()) }
+            val solveDuration by remember(room.endTime) { mutableLongStateOf(room.endTime - room.startTime) }
 
             BackHandler {
                 isExitDialogOpen = true
@@ -147,9 +152,16 @@ class GameActivity : ComponentActivity() {
 
             LaunchedEffect(room) {
                 // Lekérjük a játékosokat id alapján, mert a `room` csak az id-jüket tárolja
-                Firestore.Players.getPlayersByIds(room.players) {
+                Firestore.Players.getPlayersByIds(room.players) { newPlayers ->
                     //ownerPlayer = it.firstOrNull { player -> player.id == room.ownerId } ?: Player()
-                    players = it
+                    players = newPlayers
+
+                    Firestore.Players.removeAllPlayerListeners()
+                    players.forEach { player ->
+                        Firestore.Players.addPlayerListener(player.id) { newPlayer ->
+                            players = players.map { if (it.id == newPlayer?.id) newPlayer else it }
+                        }
+                    }
                 }
             }
 
@@ -157,8 +169,20 @@ class GameActivity : ComponentActivity() {
                 if (room.id.isBlank()) {
                     return@LaunchedEffect
                 }
-                room = room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))
-                Firestore.Rooms.setRoom(room) {}
+                Firestore.Rooms.setRoom(room.copy(sudoku = SerializableSudoku.fromSudoku(sudoku))) {}
+            }
+
+            LaunchedEffect(isDone) {
+                if (isDone && room.endTime == 0L) {
+                    Firestore.Rooms.setRoom(room.copy(endTime = System.currentTimeMillis())) {}
+                }
+            }
+
+            LaunchedEffect(playerSelectedCell) {
+                if (Auth.getCurrentUser() == null) return@LaunchedEffect
+
+                val selfPlayer = players.firstOrNull { it.id == Auth.getCurrentUser()!!.uid }
+                Firestore.PlayerSelections.selectCell(selfPlayer, playerSelectedCell) {}
             }
 
             if (isExitDialogOpen) {
@@ -166,7 +190,7 @@ class GameActivity : ComponentActivity() {
                     title = { Text(text = stringResource(id = R.string.sure_exit)) },
                     onDismissRequest = { isExitDialogOpen = false },
                     confirmButton = {
-                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(room.id) {} }) {
+                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(this, room.id) {} }) {
                             Text(text = stringResource(id = R.string.yes))
                         }
                     },
@@ -178,12 +202,23 @@ class GameActivity : ComponentActivity() {
                 )
             }
 
-            if (isDone) {
+            if (isDone && solveDuration > 0) {
                 AlertDialog(
-                    title = {},
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = null,
+                        )
+                    },
+                    title = {
+                        Text(
+                            text = "${solveDuration / 1000 / 60}:" +
+                                    (solveDuration / 1000 % 60).toString().padStart(2, '0')
+                        )
+                    },
                     onDismissRequest = {},
                     confirmButton = {
-                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(room.id) {} }) {
+                        ShapedButton(onClick = { Firestore.Rooms.leaveRoom(this, room.id) {} }) {
                             Text(text = stringResource(id = R.string.ok))
                         }
                     },
@@ -224,6 +259,7 @@ class GameActivity : ComponentActivity() {
                                 onKickRequest = {
                                     Firestore.Rooms.kickPlayer(room.id, player.id) {}
                                 },
+                                color = Color(player.color),
                                 isMini = true,
                             )
                         }
@@ -238,13 +274,14 @@ class GameActivity : ComponentActivity() {
                                 .padding(16.dp),
                             sudoku = room.sudoku.toSudoku(),
                             onCellClick = { row, column ->
-                                selectedCell = if (selectedCell == row to column) {
-                                    null
-                                } else {
-                                    row to column
-                                }
+                                playerSelectedCell =
+                                    if (playerSelectedCell?.equals(row to column) == true) {
+                                        null
+                                    } else {
+                                        (row to column).toSudokuPosition()
+                                    }
                             },
-                            selectedCells = listOfNotNull(selectedCell),
+                            players = players,
                             cellBorderColor = if (isCorrect) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.error,
                         )
@@ -255,7 +292,7 @@ class GameActivity : ComponentActivity() {
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 1) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 1) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -264,7 +301,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "1")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 2) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 2) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -273,7 +310,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "2")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 3) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 3) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -282,7 +319,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "3")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 4) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 4) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -291,7 +328,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "4")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 5) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 5) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -306,7 +343,7 @@ class GameActivity : ComponentActivity() {
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 6) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 6) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -315,7 +352,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "6")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 7) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 7) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -324,7 +361,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "7")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 8) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 8) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -333,7 +370,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "8")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 9) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 9) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
@@ -342,7 +379,7 @@ class GameActivity : ComponentActivity() {
                             Text(text = "9")
                         }
                         FloatingActionButton(
-                            onClick = { sudoku = sudoku.setCellIfWritable(selectedCell, 0) },
+                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 0) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)

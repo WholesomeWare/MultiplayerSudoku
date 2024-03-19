@@ -87,7 +87,7 @@ class LobbyActivity : ComponentActivity() {
 
     override fun onDestroy() {
         roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
-        Firestore.Rooms.leaveRoom(room.id) {}
+        Firestore.Rooms.leaveRoom(this, room.id) {}
         super.onDestroy()
     }
 
@@ -131,7 +131,7 @@ class LobbyActivity : ComponentActivity() {
                 return@joinRoom
             }
 
-            Firestore.Rooms.getRoomById(roomId) {
+            Firestore.Rooms.getRoomById(this, roomId) {
                 room = it ?: return@getRoomById
             }
             roomListenerRegistration = Firestore.Rooms.addRoomListener(roomId) { newRoom ->

@@ -1,31 +1,22 @@
-package com.wholesomeware.multiplayersudoku.ui.components
+package com.wholesomeware.multiplayersudoku.ui.components.sudoku
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 
 /**
@@ -37,7 +28,7 @@ fun SudokuDisplay(
     modifier: Modifier = Modifier,
     sudoku: Sudoku,
     onCellClick: (Int, Int) -> Unit,
-    selectedCells: List<Pair<Int, Int>> = emptyList(),
+    players: List<Player> = emptyList(),
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     val sectionBorderThickness = 3.dp
@@ -86,7 +77,7 @@ fun SudokuDisplay(
                             value = column,
                             onClick = { onCellClick(rowIndex, columnIndex) },
                             isWritable = sudoku.startingGrid[rowIndex][columnIndex] == 0,
-                            isSelected = selectedCells.contains(rowIndex to columnIndex),
+                            selection = players.find { it.currentPosition?.equals(rowIndex to columnIndex) == true },
                             borderColor = cellBorderColor,
                         )
                     }
@@ -96,43 +87,3 @@ fun SudokuDisplay(
     }
 }
 
-/**
- * Egy cella a sudoku táblázatban.
- * @param value A cella értéke. 0 esetén üres cellát jelent.
- */
-@Composable
-fun SudokuCell(
-    modifier: Modifier = Modifier,
-    value: Int,
-    onClick: () -> Unit,
-    isWritable: Boolean,
-    isSelected: Boolean = false,
-    borderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-) {
-    Box(
-        modifier = modifier
-            .border(.01f.dp, borderColor)
-            .clickable { onClick() }
-            .background(
-                if (!isWritable) Color.Gray.copy(alpha = .2f)
-                else Color.Transparent
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        AnimatedVisibility(visible = isSelected) {
-            Box(
-                modifier = Modifier
-                    .padding(2.dp)
-                    .fillMaxSize()
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-            )
-        }
-        if (value != 0) {
-            Text(
-                modifier = Modifier.alpha(if (isWritable) 1f else .8f),
-                text = value.toString(),
-            )
-        }
-    }
-}

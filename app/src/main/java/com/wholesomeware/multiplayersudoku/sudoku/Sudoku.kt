@@ -1,6 +1,7 @@
 package com.wholesomeware.multiplayersudoku.sudoku
 
 import com.wholesomeware.multiplayersudoku.R
+import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 
 /**
  * A sudoku tábla reprezentációja. Adatbázisban nem tárolható,
@@ -10,25 +11,25 @@ class Sudoku(
     val startingGrid: Array<IntArray>,
     val currentGrid: Array<IntArray> = startingGrid.map { it.clone() }.toTypedArray(),
 ) {
-    fun isCellWritable(location: Pair<Int, Int>?): Boolean {
-        if (location == null) {
+    fun isCellWritable(position: SudokuPosition?): Boolean {
+        if (position == null) {
             return false
         }
-        return startingGrid[location.first][location.second] == 0
+        return startingGrid[position.row][position.column] == 0
     }
 
     /**
      * Egy cella értékét beállítja, ha az írható és visszaadja az új [Sudoku] objektumot.
      */
-    fun setCellIfWritable(location: Pair<Int, Int>?, value: Int): Sudoku {
-        if (location == null || !isCellWritable(location)) {
+    fun setCellIfWritable(position: SudokuPosition?, value: Int): Sudoku {
+        if (position == null || !isCellWritable(position)) {
             return this
         }
 
         return Sudoku(
             startingGrid,
             currentGrid.map { it.clone() }.toTypedArray().also {
-                it[location.first][location.second] = value
+                it[position.row][position.column] = value
             }
         )
     }
@@ -52,6 +53,11 @@ class Sudoku(
         HARD(
             R.string.difficulty_hard,
             30,
+        ),
+
+        ONE_MISSING(
+            R.string.difficulty_easy,
+            9 * 9 - 1,
         ),
     }
 }
