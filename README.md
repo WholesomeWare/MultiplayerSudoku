@@ -1,66 +1,40 @@
 # Multiplayer Sudoku
 
-- [Feladatok](./TODO.md)
-- [Drive mappa az titkos fájloknak](https://drive.google.com/drive/folders/1SeNaHV2GGublvJj6MYGFj9JWlsjYWdy-?usp=sharing)
-- [Projekt beállítása és futtatása](./SETUP.md)
+## Projekt beállítása és futtatása
 
-Határidő: Március 20.
+A fejlesztői környezeten, külső könyvtárakon és generált fájlokon kívül minden megtalálható a Moodle-be feltöltött fájlok között.
 
-| Követelmény           | Appunk                          |
-| --------------------- | ------------------------------- |
-| Adatbázis             | ✅ Firebase Firestore Database   |
-| Google szolgáltatások | ✅ Firebase Auth, Google sign-in |
-| Szenzorok             | ❌ Nálunk nem lesz               |
+- Android Studio Iguana 2023.2.1 vagy újabb
+- `google-services.json` az `app` mappába, hogy működjön az authentikálás és az adatbázis elérés
+- `debug.keystore` a `C:\Users\<felhasználónév>\.android` mappába vagy build-eléskor az appot ezzel aláírva, hogy működjön a Google bejelentkezés (enélkül is használható az alkalmazás, de csak email-jelszó páros bejelentkezési lehetőséggel)
 
-Egyéb technikák, amitől bőven jó beadandó lesz ez a projekt:
+## Felosztás
 
-- UI system: Jetpack Compose
-- Intent-ek komolyabb használata, pl.: meghívó kódok megosztása közeli eszközökkel vagy más appokon keresztül
+Mikor összeültünk, hogy közösen dolgozzunk, előfordult, hogy egymás laptopját használtuk,
+ezért a GitHub statisztikái nem tükrözik teljesen a munka megoszlását.
 
-## Projekt részei
+Minden feladat mellett ott van, hogy kb. melyik fájlokat érinti az adott feladat.
+A Kotlin fájlok elérési útja a következő helyről kiindulva vannak megadva:
+`app/src/main/java/com.wholesomeware.multiplayersudoku/`
 
-### Android app
+### Viki
 
-Nyilván. Ebben fogsz segíteni, ezen fogunk együtt dolgozni.
+- UI téma elkészítése `ui/theme/*`
+- Bejelentkező felület és működése `LoginActivity.kt`
+- Többi activity UI vázlat verziónak elkészítése
+- Email-jelszó kombós bejelentkezés API kódja `firebase/Auth.kt`
+- Néhány egyszerűbb adatbázis függvény `firebase/Firestore.kt`
+- Többnyelvűség felületbe építése és magyar string-ek `res/values-hu/strings.xml`
+- Játék felülete a sudoku tábla kivételével `GameActivity.kt`
+- Szoba adatszerkezet `model/Room.kt`
 
-### Firebase projekt
+### Csáki
 
-Minden szerver oldali cucc. Körbevezetlek majd, de úgy tervezem, hogy ehhez neked ne kelljen sokszor
-nyúlnod. De ha meg szeretnéd tanulni akkor adhatok majd ehhez is hozzáférést.
-
-```
-Ha kell hozzáférés, rakok ide linket.
-```
-
-### GitHub repo
-
-Itt vagy most! Ebben a repoban oldjuk meg a közös munkát és itt tárolunk minden fájlt, kódot,
-jegyzetet. Ezt is fogjuk a tanárnak elküldeni, hisz link formában kérik a beadandót.
-
-```
-https://github.com/CsakiTheOne/MultiplayerSudoku
-```
-
-## Android projekt felépítése
-
-- app
-  - **manifest/AndroidManifest.xml**: app metaadatai. név, ikon, engedélyek, stb.
-  - **kotlin+java**: minden logika és Compose esetén a UI is
-    - **{package_name}**: az app azonosítója
-      - **MainActivity.kt**: első felület, ami megjelenik
-      - ui
-        - **theme**: színek, stílusok, témák
-        - **components**: újrahasználható UI elemek
-      - **firebase**: minden szerverrel kapcsolatos kód
-  - **res**: képek, ikonok, szövegek, stb.
-- **Gradle Scripts**: ez build-eli az appot és kezeli a külső kódokat
-
-## Technológiák videókkal
-
-| Technológiák      | Amit mi használunk                                                                                          | Amit a tanár tanítana                                          |
-| ----------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Nyelv             | [Kotlin](https://youtu.be/xT8oP0wy-A0?si=zEUFU8Q9PKs410wv)                                                  | [Java](https://youtu.be/m4-HM_sCvtQ?si=AGjvO837VE8ae9Bc)       |
-| UI system         | [Jetpack Compose](https://youtube.com/playlist?list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&si=KlFPtTBE798Rhhp8) | Hagyományos XML                                                |
-| Design nyelv      | [Material 3 (You)](https://youtu.be/UHQPdP8qgrk?si=In52HxRv-RPCS1Ho)                                        | [Material 2](https://youtu.be/6HCeBHVPxEg?si=aAPgZZ_-QcnAIkd9) |
-| Auth és adatbázis | [Firebase](https://youtu.be/vAoB4VbhRzM?si=zKo3aOUPglVwACgd)                                                | -                                                              |
-| Build system      | [Gradle](https://youtu.be/kNswjy2hPHI?si=Uzcj6_JKzQv-8NAm)                                                  | Gradle                                                         |
+- Projekt és GitHub repo elkészítése, beállítása `AndroidManifest.xml`, projekt és modul szintű `build.gradle`
+- Activity-k felületének véglegesítése és saját elemek készítése `ui/components/*`
+- Sudoku játék logika és sudoku tábla UI `sudoku/*`, `GameActivity.kt`
+- Google bejelentkezés API kódja `firebase/Auth.kt`
+- Bonyolultabb adatbázis függvények és listener-ek `firebase/Firestore.kt`
+- Ikon elkészítése `res/mipmap/*`
+- Többnyelvűség előkészítése és angol string-ek `res/values/strings.xml`
+- Adatszerkezetek kialakítása `model/*`, `Room.kt`-ban segítettem
