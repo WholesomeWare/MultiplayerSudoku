@@ -1,5 +1,9 @@
 === Multiplayer Sudoku ===
 
+Készítette:
+- Kerecsényi Viktória
+- Csáktornyai Ádám
+
 GitHub repository: https://github.com/CsakiTheOne/MultiplayerSudoku
 
 Repo tartalma:
@@ -7,10 +11,11 @@ Repo tartalma:
 - beállítási útmutató a projekt build-eléséhez (README.md)
 - felosztás, hogy melyikőnk mit csinált / min dolgozott a projektben (README.md)
 
-Készítette:
-- Kerecsényi Viktória
-- Csáktornyai Ádám
+Drive mappa: https://drive.google.com/drive/folders/1SeNaHV2GGublvJj6MYGFj9JWlsjYWdy-?usp=sharing
 
-Moodle-be feltöltött mellékletek, amelyek a repo-ban NEM találhatóak:
+Csáktornyai Ádám megjegyzése:
+A Drive mappában olyan fájlok vannak, amelyek a GitHub repoban NEM szerepelnek biztonsági okokból. Mivel az egyik fájl API kulcsokat tartalmaz, a másik pedig a keystore-om, amit fejlesztéshez használok, ezért ezeket nem szeretném nyilvánossá tenni. Kérem a tanárnőt, hogy a beadandók ellenőrzésekor kérjen jogosultságot a Drive mappához és én igyekszem a jogosultságokat hamar megadni.
+
+Drive mappa tartalma:
 - google-services.json
 - debug.keystore
