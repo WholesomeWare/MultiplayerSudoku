@@ -120,7 +120,9 @@ class MainActivity : ComponentActivity() {
 
             var inviteCode by rememberSaveable { mutableStateOf("") }
 
-            LaunchedEffect(isEditNicknameDialogOpen) {
+            LaunchedEffect(Auth.getCurrentUser(), isEditNicknameDialogOpen) {
+                if (Auth.getCurrentUser() == null) return@LaunchedEffect
+
                 Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
                     if (it == null) {
                         val defaultNewPlayer = Player(
