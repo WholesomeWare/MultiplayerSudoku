@@ -1,5 +1,11 @@
 # Multiplayer Sudoku
 
+- [Multiplayer Sudoku](#multiplayer-sudoku)
+  - [Projekt beállítása és futtatása](#projekt-beállítása-és-futtatása)
+  - [Felosztás](#felosztás)
+    - [Viki](#viki)
+    - [Csáki](#csáki)
+
 ## Projekt beállítása és futtatása
 
 A fejlesztői környezeten, külső könyvtárakon és generált fájlokon kívül minden megtalálható a Moodle-be feltöltött fájlok között.
@@ -30,7 +36,7 @@ A Kotlin fájlok elérési útja a következő helyről kiindulva vannak megadva
 
 ### Csáki
 
-- Projekt és GitHub repo elkészítése, beállítása `AndroidManifest.xml`, projekt és modul szintű `build.gradle`
+- Projekt és GitHub repo elkészítése, beállítása `AndroidManifest.xml`, projekt és modul szintű `build.gradle.kts`, `settings.gradle.kts`
 - Activity-k felületének véglegesítése és saját elemek készítése `ui/components/*`
 - Sudoku játék logika és sudoku tábla UI `sudoku/*`, `GameActivity.kt`
 - Google bejelentkezés API kódja `firebase/Auth.kt`

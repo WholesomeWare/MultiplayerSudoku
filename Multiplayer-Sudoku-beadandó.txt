@@ -1,0 +1,16 @@
+=== Multiplayer Sudoku ===
+
+GitHub repository: https://github.com/CsakiTheOne/MultiplayerSudoku
+
+Repo tartalma:
+- minden resource és kód fájl, ami az alkalmazás része
+- beállítási útmutató a projekt build-eléséhez (README.md)
+- felosztás, hogy melyikőnk mit csinált / min dolgozott a projektben (README.md)
+
+Készítette:
+- Kerecsényi Viktória
+- Csáktornyai Ádám
+
+Moodle-be feltöltött mellékletek, amelyek a repo-ban NEM találhatóak:
+- google-services.json
+- debug.keystore
