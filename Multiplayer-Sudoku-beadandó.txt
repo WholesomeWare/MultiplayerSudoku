@@ -19,3 +19,9 @@ A Drive mappában olyan fájlok vannak, amelyek a GitHub repoban NEM szerepelnek
 Drive mappa tartalma:
 - google-services.json
 - debug.keystore
+
+Videók: https://photos.app.goo.gl/qV7gVXY7jpv3jLW48
+
+Album tartalma:
+- Videó Pixel 7a-ról, angol felület, szoba tulajdonos szemszöge
+- Videó Pixel 4a-ról, magyar felület, vendég szemszöge
