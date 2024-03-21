@@ -221,13 +221,22 @@ class MainActivity : ComponentActivity() {
                                 if (currentUser != null) {
                                     Firestore.Players.deletePlayerById(currentUser.uid) { isSuccess ->
                                         Auth.deleteCurrentUser {
-                                            startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    LoginActivity::class.java
+                                            if (it) {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        LoginActivity::class.java
+                                                    )
                                                 )
-                                            )
-                                            finish()
+                                                finish()
+                                            }
+                                            else {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    getString(R.string.delete_account_error),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                             isLoading = false
                                         }
                                     }

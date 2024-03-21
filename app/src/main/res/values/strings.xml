@@ -25,6 +25,7 @@
     <string name="delete_account">Delete account</string>
     <string name="sure_delete_account">Are you sure you want to delete your account? This action is irreversible.</string>
     <string name="delete">Delete</string>
+    <string name="delete_account_error">Failed to delete account. Sign out and in again and try again.</string>
     <string name="logout">Logout</string>
     <string name="new_room">New room</string>
     <string name="new_room_description">You can select difficulty and invite friends after the room creation.</string>
@@ -34,8 +35,6 @@
     <string name="invite_code">Invite code</string>
     <string name="join">Join</string>
     <string name="made">Made by WholesomeWare and Viki</string>
-
-
 
     <!-- LobbyActivity -->
     <string name="room_not_found">Room not found</string>
@@ -50,7 +49,6 @@
     <string name="game_error">Failed to start the game</string>
     <string name="start">Start</string>
     <string name="room_title">%s\'s room</string>
-
 
     <!-- GameActivity -->
     <string name="congratulations">Congratulations!</string>

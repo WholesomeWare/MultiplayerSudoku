@@ -26,6 +26,7 @@
     <string name="delete_account">Fiók törlése</string>
     <string name="sure_delete_account">Biztosan szeretnéd törölni a fiókodat? Ez a művelet visszafordíthatatlan.</string>
     <string name="delete">Törlés</string>
+    <string name="delete_account_error">Nem sikerült törölni a fiókot. Jelentkezz ki, majd be, és próbáld újra.</string>
     <string name="logout">Kijelentkezés</string>
     <string name="new_room">Új szoba</string>
     <string name="new_room_description">Barátokat meghívni és nehézséget választani tudsz a szoba létrehozása után.</string>
