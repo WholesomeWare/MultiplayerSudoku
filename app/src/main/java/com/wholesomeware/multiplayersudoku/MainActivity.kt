@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -87,6 +88,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainScreen()
         }
+
+        App.instance.requestUpdateIfAvailable(
+            registerForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
+            ) { result ->
+                if (result.resultCode != RESULT_OK) {
+                    Toast.makeText(
+                        this,
+                        "Update failed",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        )
 
         openLoginIfNeeded()
     }

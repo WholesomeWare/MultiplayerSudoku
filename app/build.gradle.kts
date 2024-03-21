@@ -52,12 +52,19 @@ android {
 
 dependencies {
 
+    // Branding
     implementation("com.github.CsakiTheOne:WholesomeWare:1.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // Google Sign-In
     implementation("androidx.credentials:credentials:1.2.1")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
 
+    // In-app updates
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+
+    // Other
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.core.ktx)
