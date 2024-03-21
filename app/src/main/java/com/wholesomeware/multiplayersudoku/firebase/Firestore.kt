@@ -112,7 +112,7 @@ class Firestore {
                     }
             }
 
-            fun renamePlayer(id: String, newName: String, onResult: (Boolean) -> Unit) {
+            fun renamePlayer(id: String, newName: String?, onResult: (Boolean) -> Unit) {
                 App.instance.firestore.collection("players").document(id)
                     .update("name", newName)
                     .addOnCompleteListener {
@@ -216,6 +216,14 @@ class Firestore {
                             .addOnCompleteListener { taskTransactionComplete ->
                                 onResult(taskTransactionComplete.isSuccessful)
                             }
+                    }
+            }
+
+            fun updateCurrentSudoku(room: Room, onResult: (Boolean) -> Unit) {
+                App.instance.firestore.collection("rooms").document(room.id)
+                    .update("sudoku.currentGrid", room.sudoku.currentGrid)
+                    .addOnCompleteListener {
+                        onResult(it.isSuccessful)
                     }
             }
 

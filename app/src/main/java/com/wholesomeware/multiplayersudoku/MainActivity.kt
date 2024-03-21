@@ -176,11 +176,15 @@ class MainActivity : ComponentActivity() {
                         ShapedButton(
                             onClick = {
                                 isLoading = true
-                                Firestore.Players.setPlayer(player!!) { isSaved ->
+                                Firestore.Players.renamePlayer(
+                                    Auth.getCurrentUser()!!.uid,
+                                    player?.name,
+                                ) { isSaved ->
                                     if (isSaved) {
                                         isEditNicknameDialogOpen = false
                                         isLoading = false
-                                    } else {
+                                    }
+                                    else {
                                         Firestore.Players.getPlayerById(Auth.getCurrentUser()?.uid) {
                                             player = it
                                             isLoading = false
