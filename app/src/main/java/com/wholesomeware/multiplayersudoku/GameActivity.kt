@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -176,7 +177,7 @@ class GameActivity : ComponentActivity() {
                 if (room.id.isBlank() || room.endTime > 0) {
                     return@LaunchedEffect
                 }
-                Firestore.Rooms.updateCurrentSudoku(
+                Firestore.Rooms.setRoom(
                     room.copy(
                         sudoku = SerializableSudoku.fromSudoku(sudoku),
                         endTime = if (sudoku.isDone()) System.currentTimeMillis() else 0L
@@ -208,7 +209,9 @@ class GameActivity : ComponentActivity() {
             }
 
             if (sudoku.isDone()) {
-                val solveDuration = room.endTime - room.startTime
+                val solveDuration by remember(room) {
+                    mutableLongStateOf(room.endTime - room.startTime)
+                }
 
                 AlertDialog(
                     icon = {
@@ -270,6 +273,15 @@ class GameActivity : ComponentActivity() {
                                 )
                             }
                         },
+                        actions = {
+                            IconButton(
+                                onClick = {
+                                    RoomManager.showInviteSheet(this@GameActivity, room.id)
+                                }
+                            ) {
+                                Icon(imageVector = Icons.Default.Share, contentDescription = null)
+                            }
+                        }
                     )
                     Row(
                         modifier = Modifier

@@ -271,18 +271,7 @@ class LobbyActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier
                                 .clickable {
-                                    startActivity(
-                                        Intent.createChooser(
-                                            Intent(Intent.ACTION_SEND).apply {
-                                                type = "text/plain"
-                                                putExtra(
-                                                    Intent.EXTRA_TEXT,
-                                                    room.id,
-                                                )
-                                            },
-                                            getString(R.string.share)
-                                        )
-                                    )
+                                    RoomManager.showInviteSheet(this@LobbyActivity, room.id)
                                 }
                         ) {
                             Row(

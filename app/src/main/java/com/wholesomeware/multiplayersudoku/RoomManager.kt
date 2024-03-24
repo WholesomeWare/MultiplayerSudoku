@@ -1,6 +1,7 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
@@ -9,6 +10,21 @@ import com.wholesomeware.multiplayersudoku.model.Room
 
 class RoomManager {
     companion object {
+        fun showInviteSheet(context: Context, roomId: String) {
+            context.startActivity(
+                Intent.createChooser(
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            roomId,
+                        )
+                    },
+                    context.getString(R.string.share)
+                )
+            )
+        }
+
         /**
          * Ez a függvény létrehoz egy új szobát a jelenleg bejelentkezett felhasználóval.
          * @param onResult Függvény, ami lefut a szoba létrehozása után.
