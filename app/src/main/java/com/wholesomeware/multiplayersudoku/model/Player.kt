@@ -12,5 +12,4 @@ data class Player(
     val id: String = "",
     val name: String = "",
     val color: Int = Color.Gray.toArgb(),
-    val currentPosition: SudokuPosition? = null,
 )

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.wholesomeware.multiplayersudoku.model.Player
+import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 
 /**
@@ -28,7 +29,7 @@ fun SudokuDisplay(
     modifier: Modifier = Modifier,
     sudoku: Sudoku,
     onCellClick: (Int, Int) -> Unit,
-    players: List<Player> = emptyList(),
+    playerPositions: Map<Player, SudokuPosition> = emptyMap(),
     cellBorderColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     val sectionBorderThickness = 3.dp
@@ -70,6 +71,7 @@ fun SudokuDisplay(
             sudoku.currentGrid.forEachIndexed { rowIndex, row ->
                 Row {
                     row.forEachIndexed { columnIndex, column ->
+                        val position = SudokuPosition(rowIndex, columnIndex)
                         SudokuCell(
                             modifier = Modifier
                                 .weight(1f)
@@ -77,7 +79,7 @@ fun SudokuDisplay(
                             value = column,
                             onClick = { onCellClick(rowIndex, columnIndex) },
                             isWritable = sudoku.startingGrid[rowIndex][columnIndex] == 0,
-                            selection = players.find { it.currentPosition?.equals(rowIndex to columnIndex) == true },
+                            selection = playerPositions.filter { it.value == position }.keys.firstOrNull(),
                             borderColor = cellBorderColor,
                         )
                     }

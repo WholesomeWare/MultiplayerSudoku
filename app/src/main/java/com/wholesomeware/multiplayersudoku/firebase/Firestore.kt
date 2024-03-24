@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.App
+import com.wholesomeware.multiplayersudoku.RoomManager
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SudokuPosition
@@ -13,36 +14,6 @@ import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 class Firestore {
     class Players {
         companion object {
-
-            private val playerListeners = mutableListOf<ListenerRegistration>()
-
-            fun addPlayerListener(id: String, listener: (Player?) -> Unit): ListenerRegistration {
-                val registration = App.instance.firestore
-                    .collection("players")
-                    .document(id)
-                    .addSnapshotListener { snapshot, e ->
-                        if (e != null) {
-                            listener(null)
-                            return@addSnapshotListener
-                        }
-
-                        val player = snapshot?.toObject(Player::class.java)
-                            ?.copy(id = snapshot.id)
-                        listener(player)
-                    }
-                playerListeners.add(registration)
-                return registration
-            }
-
-            fun removePlayerListener(registration: ListenerRegistration) {
-                registration.remove()
-                playerListeners.remove(registration)
-            }
-
-            fun removeAllPlayerListeners() {
-                playerListeners.forEach { it.remove() }
-                playerListeners.clear()
-            }
 
             /**
              * Lekér egy játékost azonosító alapján.
@@ -128,6 +99,7 @@ class Firestore {
                     }
             }
 
+            @Deprecated("Use Realtime Database instead", replaceWith = ReplaceWith("RTDB.Players.selectCell"))
             fun selectCell(playerId: String, position: SudokuPosition?, onResult: (Boolean) -> Unit) {
                 App.instance.firestore.collection("players").document(playerId)
                     .update("currentPosition", position)
@@ -260,8 +232,6 @@ class Firestore {
                     return
                 }
 
-                Players.selectCell(Auth.getCurrentUser()!!.uid, null) {}
-
                 App.instance.firestore.collection("rooms").document(id)
                     .update("players", FieldValue.arrayRemove(Auth.getCurrentUser()!!.uid))
                     .addOnCompleteListener { leaveTask ->
@@ -269,7 +239,7 @@ class Firestore {
                         if (deleteRoomIfEmpty) {
                             getRoomById(context, id) { room ->
                                 if (room?.players?.isEmpty() == true) {
-                                    deleteRoomById(id) {}
+                                    RoomManager.deleteRoom(id) {}
                                 }
                             }
                         }

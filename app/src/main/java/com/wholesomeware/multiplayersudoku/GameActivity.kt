@@ -1,6 +1,7 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
+import com.wholesomeware.multiplayersudoku.firebase.RTDB
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
@@ -77,6 +79,7 @@ class GameActivity : ComponentActivity() {
 
     override fun onDestroy() {
         roomListenerRegistration?.let { Firestore.Rooms.removeRoomListener(it) }
+        RTDB.Rooms.removeAllRoomListeners()
         super.onDestroy()
     }
 
@@ -139,6 +142,9 @@ class GameActivity : ComponentActivity() {
 
             val isOwner by remember(room) { mutableStateOf(room.ownerId == Auth.getCurrentUser()?.uid) }
             var players by remember { mutableStateOf(emptyList<Player>()) }
+            var playerPositions by remember {
+                mutableStateOf(players.associateWith { SudokuPosition(0, 0) })
+            }
 
             var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
             var playerSelectedCell by remember { mutableStateOf<SudokuPosition?>(null) }
@@ -153,11 +159,15 @@ class GameActivity : ComponentActivity() {
                     //ownerPlayer = it.firstOrNull { player -> player.id == room.ownerId } ?: Player()
                     players = newPlayers
 
-                    Firestore.Players.removeAllPlayerListeners()
-                    players.forEach { player ->
-                        Firestore.Players.addPlayerListener(player.id) { newPlayer ->
-                            players = players.map { if (it.id == newPlayer?.id) newPlayer else it }
-                        }
+                    RTDB.Rooms.removeAllRoomListeners()
+                    RTDB.Rooms.addRoomListener(room.id) { roomSnapshot ->
+                        playerPositions = players.mapNotNull { player ->
+                            val playerSnapshot = roomSnapshot?.child("players")?.child(player.id)
+                            if (playerSnapshot == null || !playerSnapshot.exists()) null
+                            else player to SudokuPosition.fromString(
+                                playerSnapshot.child("selectedCell").getValue(String::class.java)
+                            )
+                        }.toMap()
                     }
                 }
             }
@@ -177,7 +187,7 @@ class GameActivity : ComponentActivity() {
             LaunchedEffect(playerSelectedCell) {
                 if (Auth.getCurrentUser() == null) return@LaunchedEffect
 
-                Firestore.Players.selectCell(Auth.getCurrentUser()!!.uid, playerSelectedCell) {}
+                RTDB.Players.selectCell(room.id, Auth.getCurrentUser()!!.uid, playerSelectedCell)
             }
 
             if (isExitDialogOpen) {
@@ -295,7 +305,7 @@ class GameActivity : ComponentActivity() {
                                         (row to column).toSudokuPosition()
                                     }
                             },
-                            players = players,
+                            playerPositions = playerPositions,
                             cellBorderColor = if (SudokuSolver.isGridCorrect(sudoku.currentGrid)) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.error,
                         )

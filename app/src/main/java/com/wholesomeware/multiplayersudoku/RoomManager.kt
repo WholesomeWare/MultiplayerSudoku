@@ -2,10 +2,9 @@ package com.wholesomeware.multiplayersudoku
 
 import android.content.Context
 import android.os.Build
-import androidx.compose.ui.graphics.Color
-import androidx.core.content.PackageManagerCompat
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
+import com.wholesomeware.multiplayersudoku.firebase.RTDB
 import com.wholesomeware.multiplayersudoku.model.Room
 
 class RoomManager {
@@ -36,6 +35,11 @@ class RoomManager {
             Firestore.Rooms.setRoom(room) {
                 onResult(if (it) inviteCode else null)
             }
+        }
+
+        fun deleteRoom(roomId: String, onResult: (Boolean) -> Unit) {
+            Firestore.Rooms.deleteRoomById(roomId) {}
+            RTDB.Rooms.deleteRoomById(roomId)
         }
 
         /**
