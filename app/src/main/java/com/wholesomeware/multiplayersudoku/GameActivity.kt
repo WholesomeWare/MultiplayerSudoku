@@ -53,6 +53,7 @@ import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 import com.wholesomeware.multiplayersudoku.model.SudokuPosition.Companion.toSudokuPosition
+import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isDone
 import com.wholesomeware.multiplayersudoku.ui.components.BlockableFAB
@@ -147,7 +148,7 @@ class GameActivity : ComponentActivity() {
                 mutableStateOf(players.associateWith { SudokuPosition(0, 0) })
             }
 
-            var sudoku by remember(room) { mutableStateOf(room.sudoku.toSudoku()) }
+            var sudoku by remember { mutableStateOf(Sudoku.EMPTY) }
             var playerSelectedCell by remember { mutableStateOf<SudokuPosition?>(null) }
 
             BackHandler {
@@ -162,6 +163,7 @@ class GameActivity : ComponentActivity() {
 
                     RTDB.Rooms.removeAllRoomListeners()
                     RTDB.Rooms.addRoomListener(room.id) { roomSnapshot ->
+                        // Player positions
                         playerPositions = players.mapNotNull { player ->
                             val playerSnapshot = roomSnapshot?.child("players")?.child(player.id)
                             if (playerSnapshot == null || !playerSnapshot.exists()) null
@@ -169,6 +171,10 @@ class GameActivity : ComponentActivity() {
                                 playerSnapshot.child("selectedCell").getValue(String::class.java)
                             )
                         }.toMap()
+                        // Sudoku
+                        val serializableSudoku =
+                            roomSnapshot?.child("sudoku")?.getValue(SerializableSudoku::class.java)
+                        sudoku = serializableSudoku?.toSudoku() ?: sudoku
                     }
                 }
             }
@@ -177,12 +183,14 @@ class GameActivity : ComponentActivity() {
                 if (room.id.isBlank() || room.endTime > 0) {
                     return@LaunchedEffect
                 }
-                Firestore.Rooms.setRoom(
-                    room.copy(
-                        sudoku = SerializableSudoku.fromSudoku(sudoku),
-                        endTime = if (sudoku.isDone()) System.currentTimeMillis() else 0L
-                    )
-                ) {}
+                RTDB.Rooms.updateSudoku(room.id, sudoku) {}
+                if (sudoku.isDone()) {
+                    Firestore.Rooms.setRoom(
+                        room.copy(
+                            endTime = if (sudoku.isDone()) System.currentTimeMillis() else 0L
+                        )
+                    ) {}
+                }
             }
 
             LaunchedEffect(playerSelectedCell) {

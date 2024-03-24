@@ -7,7 +7,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.wholesomeware.multiplayersudoku.model.Room
+import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
 import com.wholesomeware.multiplayersudoku.model.SudokuPosition
+import com.wholesomeware.multiplayersudoku.sudoku.Sudoku
 
 class RTDB {
     companion object {
@@ -104,6 +106,25 @@ class RTDB {
                     .child(roomId)
                     .removeValue()
                     .addOnCompleteListener { onResult(it.isSuccessful) }
+            }
+
+            fun updateSudoku(
+                roomId: String,
+                sudoku: Sudoku,
+                onResult: (Boolean) -> Unit,
+            ) {
+                if (roomId.isBlank()) {
+                    onResult(false)
+                    return
+                }
+                val room = rooms.child(roomId)
+                val serializableSudoku = SerializableSudoku.fromSudoku(sudoku)
+                room
+                    .child("sudoku")
+                    .setValue(serializableSudoku)
+                    .addOnCompleteListener { taskUpdateSudoku ->
+                        onResult(taskUpdateSudoku.isSuccessful)
+                    }
             }
 
         }

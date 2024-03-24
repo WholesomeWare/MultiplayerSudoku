@@ -191,14 +191,6 @@ class Firestore {
                     }
             }
 
-            fun updateCurrentSudoku(room: Room, onResult: (Boolean) -> Unit) {
-                App.instance.firestore.collection("rooms").document(room.id)
-                    .update("sudoku.currentGrid", room.sudoku.currentGrid)
-                    .addOnCompleteListener {
-                        onResult(it.isSuccessful)
-                    }
-            }
-
             fun deleteRoomById(id: String, onResult: (Boolean) -> Unit) {
                 App.instance.firestore.collection("rooms").document(id).delete()
                     .addOnCompleteListener {

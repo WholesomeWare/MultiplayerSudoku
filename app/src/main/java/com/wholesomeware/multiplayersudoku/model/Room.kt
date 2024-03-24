@@ -8,7 +8,6 @@ data class Room(
     val difficultyId: Int = 0,
     @JvmField
     val isStarted: Boolean = false,
-    val sudoku: SerializableSudoku = SerializableSudoku(),
     val startTime: Long = 0,
     val endTime: Long = 0,
     val startingHintsCount: Int = 0,

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.ListenerRegistration
 import com.wholesomeware.multiplayersudoku.firebase.Auth
 import com.wholesomeware.multiplayersudoku.firebase.Firestore
+import com.wholesomeware.multiplayersudoku.firebase.RTDB
 import com.wholesomeware.multiplayersudoku.model.Player
 import com.wholesomeware.multiplayersudoku.model.Room
 import com.wholesomeware.multiplayersudoku.model.SerializableSudoku
@@ -350,14 +351,11 @@ class LobbyActivity : ComponentActivity() {
                                     isLoading = true
                                     coroutineScope.launch(Dispatchers.Default) {
                                         val sudoku = SudokuGenerator.create(selectedDifficulty)
-                                        Firestore.Rooms.setRoom(
-                                            room.copy(
-                                                isStarted = true,
-                                                sudoku = SerializableSudoku.fromSudoku(sudoku),
-                                                startTime = System.currentTimeMillis(),
-                                            )
-                                        ) {
-                                            if (!it) {
+                                        RTDB.Rooms.updateSudoku(
+                                            room.id,
+                                            sudoku,
+                                        ) { taskUploadSudoku ->
+                                            if (!taskUploadSudoku) {
                                                 runOnUiThread {
                                                     Toast.makeText(
                                                         this@LobbyActivity,
@@ -365,6 +363,24 @@ class LobbyActivity : ComponentActivity() {
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                     isLoading = false
+                                                }
+                                                return@updateSudoku
+                                            }
+                                            Firestore.Rooms.setRoom(
+                                                room.copy(
+                                                    isStarted = true,
+                                                    startTime = System.currentTimeMillis(),
+                                                )
+                                            ) {
+                                                if (!it) {
+                                                    runOnUiThread {
+                                                        Toast.makeText(
+                                                            this@LobbyActivity,
+                                                            getString(R.string.game_error),
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        isLoading = false
+                                                    }
                                                 }
                                             }
                                         }
