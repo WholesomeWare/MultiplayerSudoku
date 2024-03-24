@@ -1,7 +1,6 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -19,16 +18,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Backspace
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,6 +55,7 @@ import com.wholesomeware.multiplayersudoku.model.SudokuPosition
 import com.wholesomeware.multiplayersudoku.model.SudokuPosition.Companion.toSudokuPosition
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver
 import com.wholesomeware.multiplayersudoku.sudoku.SudokuSolver.Companion.isDone
+import com.wholesomeware.multiplayersudoku.ui.components.BlockableFAB
 import com.wholesomeware.multiplayersudoku.ui.components.PlayerDisplay
 import com.wholesomeware.multiplayersudoku.ui.components.ShapedButton
 import com.wholesomeware.multiplayersudoku.ui.components.sudoku.SudokuDisplay
@@ -273,15 +273,6 @@ class GameActivity : ComponentActivity() {
                                 )
                             }
                         },
-                        actions = {
-                            IconButton(
-                                onClick = {
-                                    RoomManager.showInviteSheet(this@GameActivity, room.id)
-                                }
-                            ) {
-                                Icon(imageVector = Icons.Default.Share, contentDescription = null)
-                            }
-                        }
                     )
                     Row(
                         modifier = Modifier
@@ -299,6 +290,17 @@ class GameActivity : ComponentActivity() {
                                 isMini = true,
                             )
                         }
+                        AssistChip(
+                            modifier = Modifier.padding(8.dp),
+                            onClick = { RoomManager.showInviteSheet(this@GameActivity, room.id) },
+                            label = { Text(text = stringResource(id = R.string.invite_player)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                )
+                            },
+                        )
                     }
 
                     Box(
@@ -327,48 +329,53 @@ class GameActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(1) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 1) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "1")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(2) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 2) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "2")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(3) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 3) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "3")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(4) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 4) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "4")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(5) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 5) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "5")
                         }
@@ -378,48 +385,52 @@ class GameActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(6) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 6) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "6")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(7) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 7) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "7")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(8) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 8) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "8")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
+                            enabled = sudoku.count(9) < 9,
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 9) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Text(text = "9")
                         }
-                        FloatingActionButton(
+                        BlockableFAB(
                             onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 0) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(numberButtonHeight)
-                                .padding(4.dp)
+                                .padding(4.dp),
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Default.Backspace,

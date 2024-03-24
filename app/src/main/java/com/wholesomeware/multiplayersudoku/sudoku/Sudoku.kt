@@ -11,6 +11,11 @@ class Sudoku(
     val startingGrid: Array<IntArray>,
     val currentGrid: Array<IntArray> = startingGrid.map { it.clone() }.toTypedArray(),
 ) {
+    val currentList = currentGrid.map { it.toList() }.toList().flatten()
+
+    fun count(digit: Int): Int = currentList.count { it == digit }
+    fun count(predicate: (Int) -> Boolean): Int = currentList.count(predicate)
+
     fun isCellWritable(position: SudokuPosition?): Boolean {
         if (position == null) {
             return false
