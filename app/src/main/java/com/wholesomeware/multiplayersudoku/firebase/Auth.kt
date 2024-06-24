@@ -80,8 +80,8 @@ class Auth {
                 .build()
             oneTapClient.beginSignIn(signInRequest)
                 .addOnCompleteListener {
-                    val result = it.result
                     try {
+                        val result = it.result
                         activity.startIntentSenderForResult(
                             result.pendingIntent.intentSender,
                             REQUEST_CODE_GOOGLE_ONE_TAP,

@@ -8,24 +8,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -283,7 +282,10 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     CenterAlignedTopAppBar(
                         title = {
                             Text(text = stringResource(id = R.string.app_name))
@@ -344,282 +346,283 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                     )
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                ) {
-                    Card(
-                        modifier = Modifier.padding(8.dp),
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .widthIn(max = 600.dp)
+                            .padding(8.dp),
                     ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(8.dp),
-                                    text = stringResource(
-                                        id = R.string.hello_player,
-                                        player?.name ?: ""
-                                    ),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                IconButton(onClick = { isEditNicknameDialogOpen = true }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                playerColors.take(5).forEach { color ->
-                                    FilledIconButton(
-                                        modifier = Modifier.padding(4.dp),
-                                        onClick = {
-                                            selectedColor = color
-                                            Firestore.Players.setPlayerColor(
-                                                Auth.getCurrentUser()!!.uid,
-                                                selectedColor.toArgb()
-                                            ) {}
-                                        },
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = color,
-                                            contentColor = Color.Black,
-                                        ),
-                                    ) {
-                                        if (color == selectedColor) {
-                                            Icon(
-                                                imageVector = Icons.Default.Done,
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                playerColors.takeLast(5).forEach { color ->
-                                    FilledIconButton(
-                                        modifier = Modifier.padding(4.dp),
-                                        onClick = {
-                                            selectedColor = color
-                                            Firestore.Players.setPlayerColor(
-                                                Auth.getCurrentUser()!!.uid,
-                                                selectedColor.toArgb()
-                                            ) {}
-                                        },
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = color,
-                                            contentColor = Color.Black,
-                                        ),
-                                    ) {
-                                        if (color == selectedColor) {
-                                            Icon(
-                                                imageVector = Icons.Default.Done,
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ),
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.BottomStart,
+                        Card(
+                            modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         ) {
-                            Image(
-                                modifier = Modifier
-                                    .height(140.dp)
-                                    .alpha(.3f),
-                                painter = painterResource(id = R.drawable.undraw_world_is_mine),
-                                contentDescription = null,
-                            )
-                            Column(
-                                modifier = Modifier.padding(8.dp),
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.new_room),
-                                    modifier = Modifier.padding(8.dp),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.new_room_description),
-                                    modifier = Modifier.padding(8.dp),
-                                )
-                                ShapedButton(
-                                    onClick = {
-                                        isLoading = true
-                                        RoomManager.createRoom(this@MainActivity) { id ->
-                                            isLoading = false
-                                            if (id != null) {
-                                                startActivity(
-                                                    Intent(
-                                                        this@MainActivity,
-                                                        LobbyActivity::class.java
-                                                    ).putExtra(LobbyActivity.EXTRA_ROOM_ID, id)
-                                                )
-                                            } else {
-                                                Toast.makeText(
-                                                    this@MainActivity,
-                                                    getString(R.string.new_room_error),
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .align(Alignment.End),
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    Icon(
-                                        Icons.Filled.Add,
-                                        contentDescription = null
-                                    )
                                     Text(
-                                        getString(R.string.create),
-                                        modifier = Modifier.padding(start = 8.dp),
+                                        modifier = Modifier.padding(8.dp),
+                                        text = stringResource(
+                                            id = R.string.hello_player,
+                                            player?.name ?: ""
+                                        ),
+                                        style = MaterialTheme.typography.titleMedium,
                                     )
-                                }
-                            }
-                        }
-
-                    }
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ),
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.BottomStart,
-                        ) {
-                            Image(
-                                modifier = Modifier
-                                    .height(120.dp)
-                                    .alpha(.3f),
-                                painter = painterResource(id = R.drawable.undraw_real_time_collaboration),
-                                contentDescription = null,
-                            )
-                            Column(
-                                modifier = Modifier.padding(8.dp),
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.join_room),
-                                    modifier = Modifier.padding(8.dp),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-
-                                OutlinedTextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp),
-                                    value = inviteCode,
-                                    onValueChange = { inviteCode = it.uppercase() },
-                                    label = { Text(text = stringResource(id = R.string.invite_code)) },
-                                    leadingIcon = {
+                                    IconButton(onClick = { isEditNicknameDialogOpen = true }) {
                                         Icon(
-                                            imageVector = Icons.Default.Password,
+                                            imageVector = Icons.Default.Edit,
                                             contentDescription = null
                                         )
-
-                                    },
-                                    keyboardOptions = KeyboardOptions(
-                                        imeAction = ImeAction.Go,
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onGo = {
-                                            if (inviteCode.isNotBlank()) {
-                                                startActivity(
-                                                    Intent(
-                                                        this@MainActivity,
-                                                        LobbyActivity::class.java
-                                                    ).putExtra(
-                                                        LobbyActivity.EXTRA_ROOM_ID,
-                                                        inviteCode.trim()
-                                                    )
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    playerColors.take(5).forEach { color ->
+                                        FilledIconButton(
+                                            modifier = Modifier.padding(4.dp),
+                                            onClick = {
+                                                selectedColor = color
+                                                Firestore.Players.setPlayerColor(
+                                                    Auth.getCurrentUser()!!.uid,
+                                                    selectedColor.toArgb()
+                                                ) {}
+                                            },
+                                            colors = IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = color,
+                                                contentColor = Color.Black,
+                                            ),
+                                        ) {
+                                            if (color == selectedColor) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Done,
+                                                    contentDescription = null,
                                                 )
                                             }
                                         }
-                                    ),
-                                    trailingIcon = {
-                                        TextButton(
-                                            enabled = inviteCode.isNotBlank(),
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    playerColors.takeLast(5).forEach { color ->
+                                        FilledIconButton(
+                                            modifier = Modifier.padding(4.dp),
                                             onClick = {
-                                                startActivity(
-                                                    Intent(
-                                                        this@MainActivity,
-                                                        LobbyActivity::class.java
-                                                    ).putExtra(
-                                                        LobbyActivity.EXTRA_ROOM_ID,
-                                                        inviteCode.trim()
-                                                    )
-                                                )
+                                                selectedColor = color
+                                                Firestore.Players.setPlayerColor(
+                                                    Auth.getCurrentUser()!!.uid,
+                                                    selectedColor.toArgb()
+                                                ) {}
                                             },
+                                            colors = IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = color,
+                                                contentColor = Color.Black,
+                                            ),
                                         ) {
+                                            if (color == selectedColor) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Done,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ElevatedCard(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            ),
+                            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.BottomStart,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .height(140.dp)
+                                        .alpha(.3f),
+                                    painter = painterResource(id = R.drawable.undraw_world_is_mine),
+                                    contentDescription = null,
+                                )
+                                Column(
+                                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.new_room),
+                                        modifier = Modifier.padding(8.dp),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.new_room_description),
+                                        modifier = Modifier.padding(8.dp),
+                                    )
+                                    ShapedButton(
+                                        onClick = {
+                                            isLoading = true
+                                            RoomManager.createRoom(this@MainActivity) { id ->
+                                                isLoading = false
+                                                if (id != null) {
+                                                    startActivity(
+                                                        Intent(
+                                                            this@MainActivity,
+                                                            LobbyActivity::class.java
+                                                        ).putExtra(LobbyActivity.EXTRA_ROOM_ID, id)
+                                                    )
+                                                } else {
+                                                    Toast.makeText(
+                                                        this@MainActivity,
+                                                        getString(R.string.new_room_error),
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .align(Alignment.End),
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Add,
+                                            contentDescription = null
+                                        )
+                                        Text(
+                                            getString(R.string.create),
+                                            modifier = Modifier.padding(start = 8.dp),
+                                        )
+                                    }
+                                }
+                            }
+
+                        }
+                        ElevatedCard(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            ),
+                            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.BottomStart,
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .alpha(.3f),
+                                    painter = painterResource(id = R.drawable.undraw_real_time_collaboration),
+                                    contentDescription = null,
+                                )
+                                Column(
+                                    modifier = Modifier.padding(8.dp),
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.join_room),
+                                        modifier = Modifier.padding(8.dp),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+
+                                    OutlinedTextField(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        value = inviteCode,
+                                        onValueChange = { inviteCode = it.uppercase() },
+                                        label = { Text(text = stringResource(id = R.string.invite_code)) },
+                                        leadingIcon = {
                                             Icon(
-                                                Icons.Filled.ConnectWithoutContact,
+                                                imageVector = Icons.Default.Password,
                                                 contentDescription = null
                                             )
-                                            Text(
-                                                getString(R.string.join),
-                                                modifier = Modifier.padding(start = 8.dp),
-                                            )
-                                        }
-                                    },
-                                )
+
+                                        },
+                                        keyboardOptions = KeyboardOptions(
+                                            imeAction = ImeAction.Go,
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onGo = {
+                                                if (inviteCode.isNotBlank()) {
+                                                    startActivity(
+                                                        Intent(
+                                                            this@MainActivity,
+                                                            LobbyActivity::class.java
+                                                        ).putExtra(
+                                                            LobbyActivity.EXTRA_ROOM_ID,
+                                                            inviteCode.trim()
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        ),
+                                        trailingIcon = {
+                                            TextButton(
+                                                enabled = inviteCode.isNotBlank(),
+                                                onClick = {
+                                                    startActivity(
+                                                        Intent(
+                                                            this@MainActivity,
+                                                            LobbyActivity::class.java
+                                                        ).putExtra(
+                                                            LobbyActivity.EXTRA_ROOM_ID,
+                                                            inviteCode.trim()
+                                                        )
+                                                    )
+                                                },
+                                            ) {
+                                                Icon(
+                                                    Icons.Filled.ConnectWithoutContact,
+                                                    contentDescription = null
+                                                )
+                                                Text(
+                                                    getString(R.string.join),
+                                                    modifier = Modifier.padding(start = 8.dp),
+                                                )
+                                            }
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Bottom,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.made),
-                    )
-                    Row {
-                        IconButton(
-                            onClick = {
-                                WholesomeWare.openPlayStore(this@MainActivity)
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = com.csakitheone.wholesomeware_brand.R.drawable.ic_wholesomeware),
-                                contentDescription = null,
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://www.instagram.com/viktoriakerecsenyi/")
-                                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.made),
+                        )
+                        Row {
+                            IconButton(
+                                onClick = {
+                                    WholesomeWare.openPlayStore(this@MainActivity)
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = com.csakitheone.wholesomeware_brand.R.drawable.ic_wholesomeware),
+                                    contentDescription = null,
                                 )
                             }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.instagram),
-                                contentDescription = null,
-                            )
+                            IconButton(
+                                onClick = {
+                                    startActivity(
+                                        Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse("https://www.instagram.com/viktoriakerecsenyi/")
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.instagram),
+                                    contentDescription = null,
+                                )
+                            }
                         }
                     }
                 }

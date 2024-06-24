@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -138,7 +140,7 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
-            val numberButtonHeight = remember { 92.dp }
+            val numberButtonHeight = remember { 72.dp }
 
             var isExitDialogOpen by remember { mutableStateOf(false) }
 
@@ -265,7 +267,9 @@ class GameActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
                     CenterAlignedTopAppBar(
                         title = {
                             Text(
@@ -289,7 +293,7 @@ class GameActivity : ComponentActivity() {
                     ) {
                         players.forEach { player ->
                             PlayerDisplay(
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp),
                                 player = player,
                                 adminControlsEnabled = isOwner,
                                 onKickRequest = {
@@ -299,7 +303,7 @@ class GameActivity : ComponentActivity() {
                             )
                         }
                         AssistChip(
-                            modifier = Modifier.padding(8.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp),
                             onClick = { RoomManager.showInviteSheet(this@GameActivity, room.id) },
                             label = { Text(text = stringResource(id = R.string.invite_player)) },
                             leadingIcon = {
@@ -312,12 +316,14 @@ class GameActivity : ComponentActivity() {
                     }
 
                     Box(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .widthIn(max = 420.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         SudokuDisplay(
                             modifier = Modifier
-                                .padding(16.dp),
+                                .padding(horizontal = 32.dp),
                             sudoku = sudoku,
                             onCellClick = { row, column ->
                                 playerSelectedCell =
@@ -334,8 +340,9 @@ class GameActivity : ComponentActivity() {
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .widthIn(max = 420.dp),
                     ) {
                         BlockableFAB(
                             enabled = sudoku.count(1) < 9,
@@ -390,8 +397,9 @@ class GameActivity : ComponentActivity() {
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .widthIn(max = 420.dp),
                     ) {
                         BlockableFAB(
                             enabled = sudoku.count(6) < 9,
