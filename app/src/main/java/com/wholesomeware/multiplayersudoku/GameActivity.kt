@@ -1,18 +1,25 @@
 package com.wholesomeware.multiplayersudoku
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -43,6 +50,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,6 +88,7 @@ class GameActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             GameScreen()
         }
@@ -90,7 +105,7 @@ class GameActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         timer = Timer().apply {
-            scheduleAtFixedRate(timerTask {
+            schedule(timerTask {
                 if (room.startTime > 0) {
                     currentTimeMillis = System.currentTimeMillis() - room.startTime
                 }
@@ -140,6 +155,8 @@ class GameActivity : ComponentActivity() {
     @Composable
     private fun GameScreen() {
         MultiplayerSudokuTheme {
+            val sudokuDisplayFocusRequester = remember { FocusRequester() }
+
             val numberButtonHeight = remember { 72.dp }
 
             var isExitDialogOpen by remember { mutableStateOf(false) }
@@ -269,6 +286,7 @@ class GameActivity : ComponentActivity() {
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     CenterAlignedTopAppBar(
                         title = {
@@ -315,145 +333,239 @@ class GameActivity : ComponentActivity() {
                         )
                     }
 
-                    Box(
+                    Column(
                         modifier = Modifier
                             .weight(1f)
-                            .widthIn(max = 420.dp),
-                        contentAlignment = Alignment.Center,
+                            .widthIn(max = 720.dp),
                     ) {
-                        SudokuDisplay(
+                        Box(
                             modifier = Modifier
-                                .padding(horizontal = 32.dp),
-                            sudoku = sudoku,
-                            onCellClick = { row, column ->
-                                playerSelectedCell =
-                                    if (playerSelectedCell?.equals(row to column) == true) {
-                                        null
-                                    } else {
-                                        (row to column).toSudokuPosition()
-                                    }
-                            },
-                            playerPositions = playerPositions,
-                            cellBorderColor = if (SudokuSolver.isGridCorrect(sudoku.currentGrid)) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.error,
-                        )
-                    }
+                                .weight(1f)
+                                .widthIn(max = 480.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            SudokuDisplay(
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp)
+                                    .aspectRatio(1f)
+                                    .focusable()
+                                    .focusRequester(sudokuDisplayFocusRequester)
+                                    .onKeyEvent { e ->
+                                        Log.d("GameActivity", "Key: ${e.key}")
 
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .widthIn(max = 420.dp),
-                    ) {
-                        BlockableFAB(
-                            enabled = sudoku.count(1) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 1) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "1")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(2) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 2) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "2")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(3) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 3) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "3")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(4) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 4) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "4")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(5) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 5) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "5")
-                        }
-                    }
+                                        if (e.type != KeyEventType.KeyUp) return@onKeyEvent false
 
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .widthIn(max = 420.dp),
-                    ) {
-                        BlockableFAB(
-                            enabled = sudoku.count(6) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 6) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "6")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(7) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 7) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "7")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(8) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 8) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "8")
-                        }
-                        BlockableFAB(
-                            enabled = sudoku.count(9) < 9,
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 9) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Text(text = "9")
-                        }
-                        BlockableFAB(
-                            onClick = { sudoku = sudoku.setCellIfWritable(playerSelectedCell, 0) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(numberButtonHeight)
-                                .padding(4.dp),
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Default.Backspace,
-                                contentDescription = null
+                                        when (e.key) {
+                                            Key.Escape -> {
+                                                if (playerSelectedCell != null) playerSelectedCell =
+                                                    null
+                                                else return@onKeyEvent false
+                                            }
+
+                                            Key.NumPad1 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 1)
+                                            }
+
+                                            Key.NumPad2 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 2)
+                                            }
+
+                                            Key.NumPad3 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 3)
+                                            }
+
+                                            Key.NumPad4 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 4)
+                                            }
+
+                                            Key.NumPad5 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 5)
+                                            }
+
+                                            Key.NumPad6 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 6)
+                                            }
+
+                                            Key.NumPad7 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 7)
+                                            }
+
+                                            Key.NumPad8 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 8)
+                                            }
+
+                                            Key.NumPad9 -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 9)
+                                            }
+
+                                            Key.Backspace -> {
+                                                sudoku =
+                                                    sudoku.setCellIfWritable(playerSelectedCell, 0)
+                                            }
+
+                                            else -> return@onKeyEvent false
+                                        }
+                                        true
+                                    },
+                                sudoku = sudoku,
+                                onCellClick = { row, column ->
+                                    playerSelectedCell =
+                                        if (playerSelectedCell?.equals(row to column) == true) {
+                                            null
+                                        } else {
+                                            sudokuDisplayFocusRequester.requestFocus()
+                                            (row to column).toSudokuPosition()
+                                        }
+                                },
+                                playerPositions = playerPositions,
+                                cellBorderColor = if (SudokuSolver.isGridCorrect(sudoku.currentGrid)) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.error,
                             )
                         }
 
+                        Column(
+                            modifier = Modifier
+                                .navigationBarsPadding()
+                                .widthIn(max = 480.dp)
+                                .align(Alignment.End),
+                        ) {
+                            Row {
+                                BlockableFAB(
+                                    enabled = sudoku.count(1) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 1)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "1")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(2) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 2)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "2")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(3) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 3)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "3")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(4) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 4)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "4")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(5) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 5)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "5")
+                                }
+                            }
+
+                            Row {
+                                BlockableFAB(
+                                    enabled = sudoku.count(6) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 6)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "6")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(7) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 7)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "7")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(8) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 8)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "8")
+                                }
+                                BlockableFAB(
+                                    enabled = sudoku.count(9) < 9,
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 9)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Text(text = "9")
+                                }
+                                BlockableFAB(
+                                    onClick = {
+                                        sudoku = sudoku.setCellIfWritable(playerSelectedCell, 0)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(numberButtonHeight)
+                                        .padding(4.dp),
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Default.Backspace,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 

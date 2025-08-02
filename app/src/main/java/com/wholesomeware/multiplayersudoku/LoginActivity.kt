@@ -4,12 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,6 +45,7 @@ import com.wholesomeware.multiplayersudoku.ui.theme.MultiplayerSudokuTheme
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             LoginScreen()
         }
@@ -77,111 +81,118 @@ class LoginActivity : ComponentActivity() {
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
+                        .fillMaxHeight(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 92.dp),
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-
-                    OutlinedTextField(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .widthIn(max = 480.dp)
                             .padding(8.dp),
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text(text = stringResource(id = R.string.email)) },
-                        isError = errorMessage.isNotBlank(),
-                    )
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(bottom = 92.dp),
+                            text = stringResource(id = R.string.app_name),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
 
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text(text = stringResource(id = R.string.password)) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        supportingText = { Text(errorMessage) },
-                        isError = errorMessage.isNotBlank(),
-                    )
-                    Row {
-                        ShapedOutlinedButton(
+                        OutlinedTextField(
                             modifier = Modifier
-                                .weight(1f)
+                                .fillMaxWidth()
                                 .padding(8.dp),
-                            onClick = {
-                                isLoading = true
-                                Auth.registerWithEmailAndPassword(email, password) {
-                                    isLoading = false
-                                    if (it) {
-                                        startActivity(
-                                            Intent(
-                                                this@LoginActivity,
-                                                MainActivity::class.java
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text(text = stringResource(id = R.string.email)) },
+                            isError = errorMessage.isNotBlank(),
+                        )
+
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text(text = stringResource(id = R.string.password)) },
+                            visualTransformation = PasswordVisualTransformation(),
+                            supportingText = { Text(errorMessage) },
+                            isError = errorMessage.isNotBlank(),
+                        )
+                        Row {
+                            ShapedOutlinedButton(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(8.dp),
+                                onClick = {
+                                    isLoading = true
+                                    Auth.registerWithEmailAndPassword(email, password) {
+                                        isLoading = false
+                                        if (it) {
+                                            startActivity(
+                                                Intent(
+                                                    this@LoginActivity,
+                                                    MainActivity::class.java
+                                                )
                                             )
-                                        )
-                                        finish()
-                                    } else {
-                                        errorMessage = getString(R.string.login_error)
+                                            finish()
+                                        } else {
+                                            errorMessage = getString(R.string.login_error)
+                                        }
                                     }
-                                }
-                            },
-                        ) {
-                            Text(text = stringResource(id = R.string.register))
+                                },
+                            ) {
+                                Text(text = stringResource(id = R.string.register))
+                            }
+
+                            ShapedButton(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(8.dp),
+                                onClick = {
+                                    isLoading = true
+                                    Auth.signInWithEmailAndPassword(email, password) {
+                                        isLoading = false
+                                        if (it) {
+                                            startActivity(
+                                                Intent(
+                                                    this@LoginActivity,
+                                                    MainActivity::class.java
+                                                )
+                                            )
+                                            finish()
+                                        } else {
+                                            errorMessage = getString(R.string.login_error)
+                                        }
+                                    }
+                                },
+                            ) {
+                                Text(text = stringResource(id = R.string.login))
+                            }
                         }
 
                         ShapedButton(
                             modifier = Modifier
-                                .weight(1f)
+                                .fillMaxWidth()
                                 .padding(8.dp),
                             onClick = {
-                                isLoading = true
-                                Auth.signInWithEmailAndPassword(email, password) {
-                                    isLoading = false
-                                    if (it) {
-                                        startActivity(
-                                            Intent(
-                                                this@LoginActivity,
-                                                MainActivity::class.java
-                                            )
-                                        )
-                                        finish()
-                                    } else {
-                                        errorMessage = getString(R.string.login_error)
-                                    }
-                                }
+                                Auth.signInWithGoogle(this@LoginActivity)
                             },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(),
                         ) {
-                            Text(text = stringResource(id = R.string.login))
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_google),
+                                contentDescription = null,
+                            )
+                            Text(
+                                modifier = Modifier.padding(start = 8.dp),
+                                text = stringResource(id = R.string.login_with_google),
+                            )
                         }
-                    }
-
-                    ShapedButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onClick = {
-                            Auth.signInWithGoogle(this@LoginActivity)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black,
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(),
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_google),
-                            contentDescription = null,
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 8.dp),
-                            text = stringResource(id = R.string.login_with_google),
-                        )
                     }
                 }
             }
